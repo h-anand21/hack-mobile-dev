@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import { verifyJWT, requireRole } from './middleware/auth';
 
 dotenv.config();
 
@@ -18,6 +19,14 @@ app.use(express.json());
 // Basic health check route
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'Portl API is running' });
+});
+
+// Test protected route
+app.get('/api/me', verifyJWT, (req: Request, res: Response) => {
+  res.json({ 
+    message: 'Authentication successful', 
+    user: req.user 
+  });
 });
 
 app.listen(port, () => {
