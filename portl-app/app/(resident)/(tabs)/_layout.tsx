@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Home, User, Bell } from 'lucide-react-native';
+import { Home, Headset, CalendarDays, Megaphone, IndianRupee } from 'lucide-react-native';
 
 export default function ResidentTabsLayout() {
   return (
@@ -23,9 +23,34 @@ export default function ResidentTabsLayout() {
           tabBarIcon: ({ color }) => <Home color={color} size={24} />,
         }}
       />
-      {/* 
-        Other tabs will be added in Phase 4 (Amenities, Services, etc)
-      */}
+      <Tabs.Screen
+        name="services"
+        options={{
+          title: 'Book',
+          tabBarIcon: ({ color }) => <CalendarDays color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="complaints"
+        options={{
+          title: 'Help',
+          tabBarIcon: ({ color }) => <Headset color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: 'Notice',
+          tabBarIcon: ({ color }) => <Megaphone color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="payments"
+        options={{
+          title: 'Dues',
+          tabBarIcon: ({ color }) => <IndianRupee color={color} size={24} />,
+        }}
+      />
     </Tabs>
   );
 }
