@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { verifyJWT, requireRole } from './middleware/auth';
+import visitorRoutes from './routes/visitors';
 
 dotenv.config();
 
@@ -28,6 +29,9 @@ app.get('/api/me', verifyJWT, (req: Request, res: Response) => {
     user: req.user 
   });
 });
+
+// App Routes
+app.use('/api/visitors', verifyJWT, visitorRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
