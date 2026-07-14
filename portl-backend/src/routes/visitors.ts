@@ -167,4 +167,35 @@ router.post('/:id/reject', requireRole(['resident']), async (req: Request, res: 
   }
 });
 
+// [GUARD/ADMIN] Get visitor history
+router.get('/history', requireRole(['guard', 'admin']), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const societyId = req.user?.society_id;
+    
+    // Fetch logs with joined visitor details
+    const { data: logs, error } = await supabaseAdmin
+      .from('visitor_logs')
+      .select(`
+        id,
+        action,
+        created_at,
+        visitors!inner(
+          id, name, phone, purpose, flat_id, status, society_id
+        )
+      `)
+      .eq('visitors.society_id', societyId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      res.status(500).json({ error: 'Failed to fetch history', details: error.message });
+      return;
+    }
+
+    res.json({ success: true, history: logs });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

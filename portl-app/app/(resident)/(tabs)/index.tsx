@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Image, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../store/authStore';
 import { signOut } from '../../../services/supabase/auth';
-import { LogOut, CheckCircle, XCircle, Clock, Bell } from 'lucide-react-native';
+import { LogOut, CheckCircle, XCircle, Clock, Bell, QrCode } from 'lucide-react-native';
 import { supabase } from '../../../services/supabase/client';
 import { apiClient } from '../../../services/api/client';
+import { useRouter } from 'expo-router';
 import Animated, { FadeInUp, FadeOutDown } from 'react-native-reanimated';
 
 export default function ResidentDashboard() {
+  const router = useRouter();
   const { user, societyId } = useAuthStore();
   const [requests, setRequests] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -90,7 +92,22 @@ export default function ResidentDashboard() {
         className="flex-1 px-4"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E7FF45" />}
       >
-        <Text className="text-white font-bold text-lg mt-6 mb-4 px-2">Action Required</Text>
+        <Animated.View entering={FadeInUp.delay(100)} className="my-6">
+          <TouchableOpacity 
+            onPress={() => router.push('/(resident)/generate-pass')}
+            className="bg-accent rounded-3xl p-6 items-center flex-row shadow-card"
+          >
+            <View className="bg-dark p-4 rounded-full mr-4">
+              <QrCode size={28} color="#E7FF45" />
+            </View>
+            <View>
+              <Text className="text-dark font-bold text-xl">Guest Pass</Text>
+              <Text className="text-dark/70 font-semibold mt-1">Generate QR for quick entry</Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <Text className="text-white font-bold text-lg mb-4 px-2">Action Required</Text>
         
         {pendingRequests.length === 0 ? (
           <View className="bg-white/5 p-8 rounded-3xl items-center border border-white/5 mb-6">

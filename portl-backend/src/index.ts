@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { verifyJWT, requireRole } from './middleware/auth';
 import visitorRoutes from './routes/visitors';
+import qrRoutes from './routes/qr';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.get('/api/me', verifyJWT, (req: Request, res: Response) => {
 
 // App Routes
 app.use('/api/visitors', verifyJWT, visitorRoutes);
+app.use('/api/qr', verifyJWT, qrRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
