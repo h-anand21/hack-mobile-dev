@@ -5,6 +5,12 @@ import dotenv from 'dotenv';
 import { verifyJWT, requireRole } from './middleware/auth';
 import visitorRoutes from './routes/visitors';
 import qrRoutes from './routes/qr';
+import complaintRoutes from './routes/complaints';
+import amenityRoutes from './routes/amenities';
+import bookingRoutes from './routes/bookings';
+import maintenanceRoutes from './routes/maintenance';
+import pollRoutes from './routes/polls';
+import noticeRoutes from './routes/notices';
 
 dotenv.config();
 
@@ -34,6 +40,12 @@ app.get('/api/me', verifyJWT, (req: Request, res: Response) => {
 // App Routes
 app.use('/api/visitors', verifyJWT, visitorRoutes);
 app.use('/api/qr', verifyJWT, qrRoutes);
+app.use('/api/complaints', verifyJWT, complaintRoutes);
+app.use('/api/amenities', verifyJWT, amenityRoutes);
+app.use('/api/bookings', verifyJWT, bookingRoutes);
+app.use('/api/maintenance', verifyJWT, maintenanceRoutes);
+app.use('/api/polls', verifyJWT, pollRoutes);
+app.use('/api/notices', verifyJWT, noticeRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
