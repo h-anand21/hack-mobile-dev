@@ -11,6 +11,7 @@ import bookingRoutes from './routes/bookings';
 import maintenanceRoutes from './routes/maintenance';
 import pollRoutes from './routes/polls';
 import noticeRoutes from './routes/notices';
+import adminRoutes from './routes/admin';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/bookings', verifyJWT, bookingRoutes);
 app.use('/api/maintenance', verifyJWT, maintenanceRoutes);
 app.use('/api/polls', verifyJWT, pollRoutes);
 app.use('/api/notices', verifyJWT, noticeRoutes);
+app.use('/api/admin', verifyJWT, adminRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
