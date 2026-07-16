@@ -12,11 +12,17 @@ import maintenanceRoutes from './routes/maintenance';
 import pollRoutes from './routes/polls';
 import noticeRoutes from './routes/notices';
 import adminRoutes from './routes/admin';
+import { initAutoRejectJob } from './jobs/autoReject';
+import { initRemindersJob } from './jobs/reminders';
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+
+// Initialize Background Jobs
+initAutoRejectJob();
+initRemindersJob();
 
 // Middleware
 app.use(helmet());

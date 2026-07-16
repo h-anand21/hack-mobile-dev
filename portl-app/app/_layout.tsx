@@ -3,6 +3,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../services/supabase/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -11,6 +12,14 @@ import '../app/global.css'; // NativeWind CSS
 
 // Keep splash screen visible while loading resources
 SplashScreen.preventAutoHideAsync();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const queryClient = new QueryClient();
 
