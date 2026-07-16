@@ -18,6 +18,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -89,7 +91,7 @@ export default function RootLayout() {
     const inGuardGroup = segments[0] === '(guard)';
     
     // Default to onboarding/splash if on root
-    if (segments.length === 0) return;
+    if (!segments || segments.length === 0) return;
 
     if (!session && !inAuthGroup && segments[0] !== '') {
       // Redirect to login if not authenticated and not in auth/onboarding

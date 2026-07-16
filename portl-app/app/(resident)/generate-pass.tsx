@@ -5,6 +5,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { User, Phone, Briefcase, Calendar, ArrowRight, X, Share2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 import { apiClient } from '../../services/api/client';
 import Animated, { FadeIn, FadeInDown, FadeOutDown } from 'react-native-reanimated';
 
@@ -43,9 +44,8 @@ export default function GeneratePassScreen() {
     if (qrRef.current) {
       qrRef.current.toDataURL(async (dataURL: string) => {
         try {
-          const fs = await import('expo-file-system');
-          const uri = fs.FileSystem.cacheDirectory + 'guest_pass.png';
-          await fs.FileSystem.writeAsStringAsync(uri, dataURL, { encoding: fs.FileSystem.EncodingType.Base64 });
+          const uri = FileSystem.cacheDirectory + 'guest_pass.png';
+          await FileSystem.writeAsStringAsync(uri, dataURL, { encoding: FileSystem.EncodingType.Base64 });
           await Sharing.shareAsync(uri, { dialogTitle: `Guest Pass for ${name}` });
         } catch (e) {
           Alert.alert('Error', 'Failed to share QR');
