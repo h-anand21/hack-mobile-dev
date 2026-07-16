@@ -22,16 +22,19 @@ export const initRemindersJob = () => {
       if (dues) {
         let sentCount = 0;
         for (const due of dues) {
-          const members = due.flats?.flat_members || [];
+          // Handle Supabase join array or object mapping
+          const flatObj = Array.isArray(due.flats) ? due.flats[0] : due.flats;
+          const members = flatObj && (flatObj as any).flat_members ? (flatObj as any).flat_members : [];
+          
           for (const member of members) {
             const token = member.users?.fcm_token;
             if (token) {
-              await sendPushNotification(
-                token, 
-                'Maintenance Due', 
-                `Your maintenance of ₹${due.amount} for ${due.month} ${due.year} is pending.`,
-                { route: '/(resident)/payments' }
-              );
+              await sendPushNotification({
+                to: token,
+                title: 'Maintenance Due',
+                body: `Your maintenance of ₹${due.amount} for ${due.month} ${due.year} is pending.`,
+                data: { route: '/(resident)/payments' }
+              });
               sentCount++;
             }
           }
