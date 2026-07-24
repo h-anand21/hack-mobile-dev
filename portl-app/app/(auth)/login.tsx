@@ -26,15 +26,13 @@ export default function LoginScreen() {
       setAppLoading(false);
       Alert.alert('Login Failed', error.message);
     }
-    // Success will be handled by auth listener in _layout.tsx
   };
 
   const handleSendOtp = async () => {
     if (!phone) return Alert.alert('Error', 'Please enter phone number');
     setLoading(true);
-    const { error } = await signInWithPhone(`+91${phone}`); // Assuming India, in production use country picker
+    const { error } = await signInWithPhone(`+91${phone}`);
     setLoading(false);
-    
     if (error) {
       Alert.alert('Failed to send OTP', error.message);
     } else {
@@ -48,17 +46,26 @@ export default function LoginScreen() {
     setAppLoading(true);
     const { error } = await verifyPhoneOtp(`+91${phone}`, otp);
     setLoading(false);
-    
     if (error) {
       setAppLoading(false);
       Alert.alert('Verification Failed', error.message);
     }
-    // Success will be handled by auth listener in _layout.tsx
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setAppLoading(true);
+    const { error } = await signInWithGoogle();
+    setLoading(false);
+    if (error) {
+      setAppLoading(false);
+      Alert.alert('Google Sign-In Failed', error.message);
+    }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-dark">
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 px-6 justify-center"
       >
@@ -68,14 +75,14 @@ export default function LoginScreen() {
 
           {/* Toggle Method */}
           <View className="flex-row bg-white/5 rounded-full p-1 mb-8">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setMethod('email')}
               className={`flex-1 flex-row justify-center items-center py-3 rounded-full ${method === 'email' ? 'bg-white/10' : ''}`}
             >
               <Mail size={18} color={method === 'email' ? '#FFF' : '#666'} />
               <Text className={`ml-2 font-semibold ${method === 'email' ? 'text-white' : 'text-textSecondary'}`}>Email</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setMethod('phone')}
               className={`flex-1 flex-row justify-center items-center py-3 rounded-full ${method === 'phone' ? 'bg-white/10' : ''}`}
             >
@@ -110,7 +117,7 @@ export default function LoginScreen() {
                   onChangeText={setPassword}
                 />
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="bg-accent py-4 rounded-2xl items-center mt-8 flex-row justify-center"
                 onPress={handleEmailLogin}
                 disabled={loading}
@@ -139,7 +146,7 @@ export default function LoginScreen() {
                       maxLength={10}
                     />
                   </View>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     className="bg-accent py-4 rounded-2xl items-center mt-8 flex-row justify-center"
                     onPress={handleSendOtp}
                     disabled={loading}
@@ -155,14 +162,14 @@ export default function LoginScreen() {
                     <TextInput
                       placeholder="6-digit OTP"
                       placeholderTextColor="#666"
-                      className="flex-1 ml-3 text-white text-base tracking-[10px]"
+                      className="flex-1 ml-3 text-white text-base"
                       keyboardType="number-pad"
                       value={otp}
                       onChangeText={setOtp}
                       maxLength={6}
                     />
                   </View>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     className="bg-accent py-4 rounded-2xl items-center mt-8 flex-row justify-center"
                     onPress={handleVerifyOtp}
                     disabled={loading}
@@ -177,31 +184,28 @@ export default function LoginScreen() {
                   <TouchableOpacity onPress={() => setIsOtpSent(false)} className="mt-6 items-center">
                     <Text className="text-white/60">Change Phone Number</Text>
                   </TouchableOpacity>
+                </>
+              )}
+            </View>
+          )}
+
           {/* Google Login Button */}
-          <TouchableOpacity 
-            onPress={async () => {
-              setLoading(true);
-              setAppLoading(true);
-              const { error } = await signInWithGoogle();
-              setLoading(false);
-              if (error) {
-                setAppLoading(false);
-                Alert.alert('Google Sign-In Failed', error.message);
-              }
-            }}
+          <TouchableOpacity
+            onPress={handleGoogleLogin}
             disabled={loading}
             className="bg-white/10 border border-white/20 py-4 rounded-2xl flex-row items-center justify-center mt-6"
           >
             <Text className="text-white font-bold text-base">Continue with Google 🚀</Text>
           </TouchableOpacity>
 
-          {/* Dummy Info for Hackathon */}
+          {/* Demo Logins for Hackathon */}
           <View className="mt-8 bg-white/5 p-4 rounded-xl border border-white/10">
             <Text className="text-white font-bold mb-2">Demo Logins</Text>
             <Text className="text-textSecondary text-xs">Admin: admin@portl.com / pass123</Text>
             <Text className="text-textSecondary text-xs mt-1">Guard: guard@portl.com / pass123</Text>
             <Text className="text-textSecondary text-xs mt-1">Resident: resident@portl.com / pass123</Text>
           </View>
+
         </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
