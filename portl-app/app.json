@@ -2,6 +2,7 @@
   "expo": {
     "name": "portl-app",
     "slug": "portl-app",
+    "scheme": "portl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

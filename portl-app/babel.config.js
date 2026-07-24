@@ -6,8 +6,7 @@ module.exports = function (api) {
       "nativewind/babel",
     ],
     plugins: [
-      // react-native-reanimated/plugin removed for Expo Go compatibility
-      // It will be added back when building a Development Build / APK
+      'react-native-reanimated/plugin',
     ],
   };
 };
