@@ -37,18 +37,46 @@ export const verifyEmailOtp = async (email: string, token: string) => {
   return { data, error };
 };
 
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
+
 // Sign in with Google (OAuth)
 export const signInWithGoogle = async () => {
-  const redirectUrl = Linking.createURL('/(auth)/callback');
-  
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: redirectUrl,
-    },
-  });
-  
-  return { data, error };
+  try {
+    const redirectUrl = Linking.createURL('/(auth)/callback');
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (error) return { data: null, error };
+
+    if (data?.url) {
+      const res = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+      if (res.type === 'success' && res.url) {
+        const createSessionFromUrl = async (url: string) => {
+          const { params, errorCode } = Linking.parse(url);
+          if (errorCode) throw new Error(errorCode);
+          const { access_token, refresh_token } = params;
+          if (access_token && refresh_token) {
+            return await supabase.auth.setSession({
+              access_token: access_token as string,
+              refresh_token: refresh_token as string,
+            });
+          }
+        };
+        await createSessionFromUrl(res.url);
+      }
+    }
+    return { data, error: null };
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
 };
 
 // Logout

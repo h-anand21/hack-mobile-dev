@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Phone, Lock, ArrowRight } from 'lucide-react-native';
-import { signInWithEmail, signInWithPhone, verifyPhoneOtp } from '../../services/supabase/auth';
+import { signInWithEmail, signInWithPhone, verifyPhoneOtp, signInWithGoogle } from '../../services/supabase/auth';
 import { useAuthStore } from '../../store/authStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -177,13 +177,26 @@ export default function LoginScreen() {
                   <TouchableOpacity onPress={() => setIsOtpSent(false)} className="mt-6 items-center">
                     <Text className="text-white/60">Change Phone Number</Text>
                   </TouchableOpacity>
-                </>
-              )}
-            </View>
-          )}
+          {/* Google Login Button */}
+          <TouchableOpacity 
+            onPress={async () => {
+              setLoading(true);
+              setAppLoading(true);
+              const { error } = await signInWithGoogle();
+              setLoading(false);
+              if (error) {
+                setAppLoading(false);
+                Alert.alert('Google Sign-In Failed', error.message);
+              }
+            }}
+            disabled={loading}
+            className="bg-white/10 border border-white/20 py-4 rounded-2xl flex-row items-center justify-center mt-6"
+          >
+            <Text className="text-white font-bold text-base">Continue with Google 🚀</Text>
+          </TouchableOpacity>
 
           {/* Dummy Info for Hackathon */}
-          <View className="mt-12 bg-white/5 p-4 rounded-xl border border-white/10">
+          <View className="mt-8 bg-white/5 p-4 rounded-xl border border-white/10">
             <Text className="text-white font-bold mb-2">Demo Logins</Text>
             <Text className="text-textSecondary text-xs">Admin: admin@portl.com / pass123</Text>
             <Text className="text-textSecondary text-xs mt-1">Guard: guard@portl.com / pass123</Text>
