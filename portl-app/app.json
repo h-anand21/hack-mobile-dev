@@ -25,11 +25,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-status-bar",
-      "expo-image",
-      "expo-barcode-scanner",
       "expo-secure-store",
-      "expo-sharing",
       "expo-font"
     ]
   }
