@@ -2,30 +2,60 @@ const { createClient } = require('@supabase/supabase-js');
 const dotenv = require('dotenv');
 const path = require('path');
 
+// Load backend .env
 dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Load frontend .env
+const frontendEnv = dotenv.config({ path: path.resolve(__dirname, '../portl-app/.env') }).parsed || {};
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const url = process.env.SUPABASE_URL || frontendEnv.EXPO_PUBLIC_SUPABASE_URL;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const anonKey = frontendEnv.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase URL or Key in .env');
-  process.exit(1);
-}
+console.log('--- SUPABASE DEEP CONNECTIVITY CHECK ---');
+console.log('Target URL:', url);
 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-async function checkConnection() {
-  console.log('Testing connection to:', supabaseUrl);
+async function testBackend() {
+  console.log('\n1. Testing Backend Admin Client (Service Role Key)...');
   try {
-    const { data, error } = await supabase.auth.admin.listUsers();
+    const supabaseAdmin = createClient(url, serviceKey);
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
     if (error) {
-      console.error('Supabase connection failed:', error.message);
+      console.error('❌ Backend Auth failed:', error.message);
     } else {
-      console.log('✅ Supabase connected successfully! Found', data.users.length, 'users.');
+      console.log('✅ Backend Auth connected successfully! Current users count:', data.users.length);
+    }
+
+    // Check if tables exist in the DB
+    const { data: usersData, error: usersErr } = await supabaseAdmin.from('users').select('count', { count: 'exact', head: true });
+    if (usersErr) {
+      console.log('⚠️ Database tables notice:', usersErr.message, '(Need to run migration SQL if not done yet)');
+    } else {
+      console.log('✅ Database tables exist and connected!');
     }
   } catch (err) {
-    console.error('Failed to connect:', err.message);
+    console.error('❌ Backend exception:', err.message);
   }
 }
 
-checkConnection();
+async function testFrontend() {
+  console.log('\n2. Testing Frontend Client (Anon Public Key)...');
+  try {
+    const supabaseAnon = createClient(url, anonKey);
+    const { data, error } = await supabaseAnon.auth.getSession();
+    if (error) {
+      console.error('❌ Frontend Auth failed:', error.message);
+    } else {
+      console.log('✅ Frontend Anon client initialized successfully!');
+    }
+  } catch (err) {
+    console.error('❌ Frontend exception:', err.message);
+  }
+}
+
+async function run() {
+  await testBackend();
+  await testFrontend();
+  console.log('\n--- CHECK COMPLETE ---');
+}
+
+run();
