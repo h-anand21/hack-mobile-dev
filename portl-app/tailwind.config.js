@@ -5,6 +5,9 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}"
   ],
   presets: [require("nativewind/preset")],
+  corePlugins: {
+    aspectRatio: false,
+  },
   theme: {
     extend: {
       colors: {
