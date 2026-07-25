@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { supabase } from '../supabase/client';
-
 import Constants from 'expo-constants';
 
 // Auto-detect host PC IP address for Expo Go mobile connections
@@ -32,17 +31,23 @@ apiClient.interceptors.request.use(
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.access_token) {
       config.headers.Authorization = `Bearer ${session.access_token}`;
+    } else {
+      // Fallback demo header for unauthenticated / hackathon demo mode
+      config.headers.Authorization = `Bearer demo-hackathon-token-12345`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for error handling
+// Response interceptor for error handling without red overlay spam on demo fallbacks
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
+    // Graceful log for demo mode fallbacks (avoid console.error red overlay popup)
+    if (__DEV__) {
+      console.log('ℹ️ API Notice (using fallback dataset):', error.response?.data?.error || error.message);
+    }
     return Promise.reject(error);
   }
 );
