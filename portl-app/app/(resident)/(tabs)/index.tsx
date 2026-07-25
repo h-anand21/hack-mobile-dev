@@ -262,7 +262,7 @@ export default function ResidentDashboard() {
         <Animated.View entering={FadeInUp.delay(300)} className="flex-row gap-3 mb-4">
           {/* Card 1: Society Notice */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/community')}
+            onPress={() => router.push('/(resident)/notice-board')}
             className="flex-1 bg-[#EEF5FF] p-4 rounded-3xl justify-between border border-blue-100"
           >
             <View>
@@ -278,7 +278,7 @@ export default function ResidentDashboard() {
             </View>
 
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/notice-board')}
               className="mt-4 flex-row items-center"
             >
               <Text className="text-blue-600 font-bold text-xs mr-1">Read More</Text>

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../store/authStore';
 import { signOut } from '../../../services/supabase/auth';
 import { 
-  User, Home, Car, CreditCard, Wrench, Shield, LogOut, ChevronRight, Bell, Settings, Clock, Users 
+  User, Home, Car, CreditCard, Wrench, Shield, LogOut, ChevronRight, Bell, Settings, Clock, Users, Calendar, Megaphone 
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -70,6 +70,22 @@ export default function ProfileTab() {
               <View>
                 <Text className="text-gray-900 font-bold text-sm">Visitor History & Logs</Text>
                 <Text className="text-gray-400 text-[10px] font-medium">View all 28 past visitor entries</Text>
+              </View>
+            </View>
+            <ChevronRight size={16} color="#94A3B8" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => router.push('/(resident)/notice-board')}
+            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center">
+              <View className="w-10 h-10 bg-[#E2F8EE] rounded-2xl items-center justify-center mr-3">
+                <Megaphone size={18} color="#059669" />
+              </View>
+              <View>
+                <Text className="text-gray-900 font-bold text-sm">Notice Board & Updates</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View society circulars & announcements</Text>
               </View>
             </View>
             <ChevronRight size={16} color="#94A3B8" />

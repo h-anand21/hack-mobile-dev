@@ -89,15 +89,17 @@ export default function ServicesTab() {
   ];
 
   const handleBookAmenity = (item: any) => {
-    Alert.alert(
-      `Book ${item.name} 📅`,
-      `Select a time slot for ${item.name} (${item.timing}):`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Morning Slot (07:00 AM)', onPress: () => Alert.alert('Booked 🎉', `${item.name} reserved for 07:00 AM today!`) },
-        { text: 'Evening Slot (06:00 PM)', onPress: () => Alert.alert('Booked 🎉', `${item.name} reserved for 06:00 PM today!`) }
-      ]
-    );
+    router.push({
+      pathname: '/(resident)/book-slot',
+      params: {
+        id: item.id,
+        name: item.name,
+        subtitle: item.subtitle,
+        status: item.status,
+        timing: item.timing,
+        location: 'Sports Zone, Block A'
+      }
+    });
   };
 
   const filtered = amenitiesList.filter(item => {
