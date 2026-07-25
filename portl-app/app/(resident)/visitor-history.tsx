@@ -12,7 +12,7 @@ import { useAuthStore } from '../../store/authStore';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export default function VisitorHistoryScreen() {
-  const router = Router = useRouter();
+  const router = useRouter();
   const { user, societyId } = useAuthStore();
   
   const [activeTab, setActiveTab] = useState<'all' | 'approved' | 'rejected' | 'pre-approved'>('all');
