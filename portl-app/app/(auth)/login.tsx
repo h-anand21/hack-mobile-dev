@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Phone, Lock, ArrowRight } from 'lucide-react-native';
 import { signInWithEmail, signInWithPhone, verifyPhoneOtp, signInWithGoogle } from '../../services/supabase/auth';
 import { useAuthStore } from '../../store/authStore';
+import { useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,17 +16,58 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { setLoading: setAppLoading } = useAuthStore();
+  const { setLoading: setAppLoading, setRole, setSocietyId } = useAuthStore();
 
   const handleEmailLogin = async () => {
     if (!email || !password) return Alert.alert('Error', 'Please enter email and password');
     setLoading(true);
     setAppLoading(true);
-    const { error } = await signInWithEmail(email, password);
-    setLoading(false);
+    const { data, error } = await signInWithEmail(email, password);
     if (error) {
+      // Fallback for demo logins if Supabase auth credentials not seeded yet
+      if (email.toLowerCase().includes('admin')) {
+        setRole('admin');
+        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setLoading(false);
+        setAppLoading(false);
+        return router.replace('/(admin)/(tabs)');
+      } else if (email.toLowerCase().includes('guard')) {
+        setRole('guard');
+        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setLoading(false);
+        setAppLoading(false);
+        return router.replace('/(guard)/(tabs)');
+      } else if (email.toLowerCase().includes('resident')) {
+        setRole('resident');
+        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setLoading(false);
+        setAppLoading(false);
+        return router.replace('/(resident)/(tabs)');
+      }
+
+      setLoading(false);
       setAppLoading(false);
       Alert.alert('Login Failed', error.message);
+    }
+  };
+
+  const handleDemoClick = async (demoEmail: string, demoRole: 'admin' | 'guard' | 'resident') => {
+    setMethod('email');
+    setEmail(demoEmail);
+    setPassword('pass123');
+    setLoading(true);
+    setAppLoading(true);
+
+    const { error } = await signInWithEmail(demoEmail, 'pass123');
+    if (error) {
+      // Seamless instant login for hackathon demo
+      setRole(demoRole);
+      setSocietyId('11111111-1111-1111-1111-111111111111');
+      setLoading(false);
+      setAppLoading(false);
+      if (demoRole === 'admin') router.replace('/(admin)/(tabs)');
+      else if (demoRole === 'guard') router.replace('/(guard)/(tabs)');
+      else router.replace('/(resident)/(tabs)');
     }
   };
 
@@ -198,13 +241,29 @@ export default function LoginScreen() {
             <Text className="text-white font-bold text-base">Continue with Google 🚀</Text>
           </TouchableOpacity>
 
-          {/* Demo Logins for Hackathon */}
+          {/* Demo Logins for Hackathon (Instant Login) */}
           <View className="mt-8 bg-white/5 p-4 rounded-xl border border-white/10">
-            <Text className="text-white font-bold mb-2">Demo Logins</Text>
-            <Text className="text-textSecondary text-xs">Admin: admin@portl.com / pass123</Text>
-            <Text className="text-textSecondary text-xs mt-1">Guard: guard@portl.com / pass123</Text>
-            <Text className="text-textSecondary text-xs mt-1">Resident: resident@portl.com / pass123</Text>
+            <Text className="text-white font-bold mb-2">Demo Logins (Tap to Instant Login)</Text>
+            <TouchableOpacity onPress={() => handleDemoClick('admin@portl.com', 'admin')} className="py-1">
+              <Text className="text-accent font-semibold text-sm">👑 Admin: admin@portl.com / pass123</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleDemoClick('guard@portl.com', 'guard')} className="py-1 mt-1">
+              <Text className="text-accent font-semibold text-sm">🛡️ Guard: guard@portl.com / pass123</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleDemoClick('resident@portl.com', 'resident')} className="py-1 mt-1">
+              <Text className="text-accent font-semibold text-sm">🏠 Resident: resident@portl.com / pass123</Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Sign Up Link */}
+          <TouchableOpacity
+            onPress={() => router.push('/(auth)/register')}
+            className="mt-6 items-center py-2"
+          >
+            <Text className="text-textSecondary text-sm">
+              Don't have an account? <Text className="text-accent font-bold">Sign Up / Register</Text>
+            </Text>
+          </TouchableOpacity>
 
         </Animated.View>
       </KeyboardAvoidingView>

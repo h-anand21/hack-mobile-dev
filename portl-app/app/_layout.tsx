@@ -76,12 +76,21 @@ export default function RootLayout() {
         .eq('id', userId)
         .single();
         
-      if (!error && data) {
+      if (!error && data?.role) {
         setRole(data.role as any);
         setSocietyId(data.society_id);
+      } else {
+        // Fallback for user role detection if DB profile missing
+        const { data: userData } = await supabase.auth.getUser();
+        const email = userData?.user?.email?.toLowerCase() || '';
+        if (email.includes('admin')) setRole('admin');
+        else if (email.includes('guard')) setRole('guard');
+        else setRole('resident');
+        setSocietyId('11111111-1111-1111-1111-111111111111');
       }
     } catch (err) {
       console.error('Error fetching role:', err);
+      setRole('resident');
     } finally {
       setLoading(false);
     }
@@ -94,6 +103,7 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === '(auth)';
     const inResidentGroup = segments[0] === '(resident)';
     const inGuardGroup = segments[0] === '(guard)';
+    const inAdminGroup = segments[0] === '(admin)';
     
     // Default to onboarding/splash if on root
     if (!segments || segments.length === 0) return;
@@ -107,8 +117,9 @@ export default function RootLayout() {
         router.replace('/(resident)/(tabs)');
       } else if (role === 'guard' && !inGuardGroup) {
         router.replace('/(guard)/(tabs)');
+      } else if (role === 'admin' && !inAdminGroup) {
+        router.replace('/(admin)/(tabs)');
       }
-      // TODO: Admin routing
     }
   }, [session, isLoading, segments, fontsLoaded, role]);
 

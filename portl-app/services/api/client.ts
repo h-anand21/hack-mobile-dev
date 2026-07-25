@@ -1,11 +1,26 @@
 import axios from 'axios';
 import { supabase } from '../supabase/client';
 
-// Use backend URL from env, fallback to localhost for development
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+import Constants from 'expo-constants';
+
+// Auto-detect host PC IP address for Expo Go mobile connections
+let defaultHost = 'localhost';
+const hostUri = Constants.expoConfig?.hostUri || Constants.experienceUrl;
+if (hostUri) {
+  const ip = hostUri.split(':')[0];
+  if (ip && ip !== 'localhost' && ip !== '127.0.0.1') {
+    defaultHost = ip;
+  }
+}
+
+let baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || process.env.EXPO_PUBLIC_API_URL || `http://${defaultHost}:3000`;
+if (defaultHost !== 'localhost' && baseUrl.includes('localhost')) {
+  baseUrl = baseUrl.replace('localhost', defaultHost);
+}
 
 export const apiClient = axios.create({
-  baseURL: API_URL,
+  baseURL: baseUrl,
+  timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
   },

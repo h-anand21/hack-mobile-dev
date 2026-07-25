@@ -19,6 +19,40 @@ export const verifyPhoneOtp = async (phone: string, token: string) => {
   return { data, error };
 };
 
+// Sign Up with Email and create user profile record
+export const signUpWithEmail = async (
+  email: string,
+  password: string,
+  name: string,
+  role: 'resident' | 'guard' | 'admin',
+  phone?: string
+) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name, role }
+    }
+  });
+
+  if (error) return { data: null, error };
+
+  if (data?.user) {
+    const { error: profileErr } = await supabase
+      .from('users')
+      .upsert({
+        id: data.user.id,
+        name,
+        role,
+        phone: phone || null,
+        society_id: '11111111-1111-1111-1111-111111111111'
+      });
+    if (profileErr) console.error('Profile creation error:', profileErr.message);
+  }
+
+  return { data, error: null };
+};
+
 // Initiate email sign in (for admin/demo purposes if needed)
 export const signInWithEmail = async (email: string, password?: string) => {
   if (password) {
