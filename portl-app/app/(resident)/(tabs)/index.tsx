@@ -203,7 +203,7 @@ export default function ResidentDashboard() {
           <View className="flex-row justify-between items-center mb-3 px-1">
             <Text className="text-gray-900 font-extrabold text-base">Quick Actions</Text>
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')} 
+              onPress={() => router.push('/(resident)/(tabs)/visitors')} 
               className="flex-row items-center"
             >
               <Text className="text-gray-400 font-semibold text-xs mr-1">View All</Text>
@@ -225,7 +225,7 @@ export default function ResidentDashboard() {
 
             {/* Bookings */}
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/(tabs)/services')}
               className="flex-1 bg-white p-3.5 rounded-2xl items-center border border-gray-100 shadow-sm"
             >
               <View className="w-12 h-12 bg-[#E2E2FF] rounded-2xl items-center justify-center mb-2">
@@ -236,7 +236,7 @@ export default function ResidentDashboard() {
 
             {/* Helpdesk */}
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/(tabs)/complaints')}
               className="flex-1 bg-white p-3.5 rounded-2xl items-center border border-gray-100 shadow-sm"
             >
               <View className="w-12 h-12 bg-[#FFE5D9] rounded-2xl items-center justify-center mb-2">

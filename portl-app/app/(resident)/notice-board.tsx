@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput, RefreshControl, Al
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   ArrowLeft, Bell, Search, Filter, Pin, Calendar, ChevronRight, 
-  Droplets, ArrowUpCircle, Users, Megaphone, PartyPopper, Trash2, Headset, Info, Sparkles 
+  Users, Megaphone, Headset, Info, Sparkles 
 } from 'lucide-react-native';
 import { apiClient } from '../../services/api/client';
 import { useRouter } from 'expo-router';
@@ -24,10 +24,8 @@ export default function NoticeBoardScreen() {
       body: 'Water supply will be interrupted on 18 May 2025 from 10:00 PM to 6:00 AM due to pipeline repair.',
       date: '18 May 2025',
       unread: true,
-      icon: Droplets,
-      bgColor: 'bg-blue-100',
-      iconColor: '#2563EB',
-      pillColor: 'bg-blue-50 text-blue-700'
+      bgColor: '#DBEAFE',
+      iconColor: '#2563EB'
     },
     {
       id: 'n2',
@@ -36,10 +34,8 @@ export default function NoticeBoardScreen() {
       body: 'Lift maintenance will be carried out on 20 May 2025 from 9:00 AM to 1:00 PM.',
       date: '17 May 2025',
       unread: true,
-      icon: ArrowUpCircle,
-      bgColor: 'bg-amber-100',
-      iconColor: '#D97706',
-      pillColor: 'bg-amber-50 text-amber-800'
+      bgColor: '#FEF3C7',
+      iconColor: '#D97706'
     },
     {
       id: 'n3',
@@ -48,10 +44,8 @@ export default function NoticeBoardScreen() {
       body: 'All residents are requested to attend the AGM on 25 May 2025 at 6:00 PM in the Community Hall.',
       date: '16 May 2025',
       unread: false,
-      icon: Users,
-      bgColor: 'bg-purple-100',
-      iconColor: '#7C3AED',
-      pillColor: 'bg-purple-50 text-purple-700'
+      bgColor: '#EDE9FE',
+      iconColor: '#7C3AED'
     },
     {
       id: 'n4',
@@ -60,10 +54,8 @@ export default function NoticeBoardScreen() {
       body: 'Please park only in the designated areas. Avoid blocking driveways and fire exits.',
       date: '15 May 2025',
       unread: true,
-      icon: Megaphone,
-      bgColor: 'bg-emerald-100',
-      iconColor: '#059669',
-      pillColor: 'bg-emerald-50 text-emerald-700'
+      bgColor: '#D1FAE5',
+      iconColor: '#059669'
     },
     {
       id: 'n5',
@@ -72,10 +64,8 @@ export default function NoticeBoardScreen() {
       body: 'Our annual community fest will be held on 1 June 2025. More details coming soon!',
       date: '14 May 2025',
       unread: false,
-      icon: PartyPopper,
-      bgColor: 'bg-pink-100',
-      iconColor: '#DB2777',
-      pillColor: 'bg-pink-50 text-pink-700'
+      bgColor: '#FCE7F3',
+      iconColor: '#DB2777'
     },
     {
       id: 'n6',
@@ -84,10 +74,8 @@ export default function NoticeBoardScreen() {
       body: 'Dry waste will be collected on alternate days from this week. Please cooperate.',
       date: '13 May 2025',
       unread: false,
-      icon: Trash2,
-      bgColor: 'bg-emerald-100',
-      iconColor: '#059669',
-      pillColor: 'bg-emerald-50 text-emerald-700'
+      bgColor: '#D1FAE5',
+      iconColor: '#059669'
     }
   ];
 
@@ -96,8 +84,19 @@ export default function NoticeBoardScreen() {
   const fetchNotices = async () => {
     try {
       const { data } = await apiClient.get('/api/notices');
-      if (data?.success && data?.notices?.length > 0) {
-        setNotices(data.notices);
+      if (data?.success && Array.isArray(data?.notices) && data.notices.length > 0) {
+        // Normalize API notices to match local shape
+        const normalized = data.notices.map((n: any) => ({
+          id: n.id || String(Math.random()),
+          title: n.title || 'Notice',
+          category: n.category || 'General',
+          body: n.content || n.body || '',
+          date: n.date || 'Recent',
+          unread: n.unread ?? false,
+          bgColor: '#F3F4F6',
+          iconColor: '#475569'
+        }));
+        setNotices(normalized);
       }
     } catch (e) {
       setNotices(defaultNotices);
@@ -114,17 +113,30 @@ export default function NoticeBoardScreen() {
     setRefreshing(false);
   };
 
-  const filteredNotices = notices.filter(n => {
+  const filteredNotices = (Array.isArray(notices) ? notices : []).filter(n => {
     if (activeTab === 'society' && n.category !== 'Society') return false;
     if (activeTab === 'maintenance' && n.category !== 'Maintenance') return false;
     if (activeTab === 'events' && n.category !== 'Events') return false;
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q) || n.category.toLowerCase().includes(q);
+      const titleMatch = (n.title || '').toLowerCase().includes(q);
+      const bodyMatch = (n.body || n.content || '').toLowerCase().includes(q);
+      const catMatch = (n.category || '').toLowerCase().includes(q);
+      return titleMatch || bodyMatch || catMatch;
     }
     return true;
   });
+
+  // Map category to icon color/bg — no components stored in data
+  const getCategoryStyle = (category: string) => {
+    switch ((category || '').toLowerCase()) {
+      case 'maintenance': return { bg: '#DBEAFE', color: '#2563EB' };
+      case 'events': return { bg: '#FCE7F3', color: '#DB2777' };
+      case 'society': return { bg: '#EDE9FE', color: '#7C3AED' };
+      default: return { bg: '#F3F4F6', color: '#475569' };
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FB]">
@@ -290,27 +302,31 @@ export default function NoticeBoardScreen() {
 
         {/* RECENT NOTICES LIST */}
         {filteredNotices.map((item, idx) => {
-          const IconComp = item.icon;
+          const style = getCategoryStyle(item.category);
+          const bgColor = item.bgColor || style.bg;
+          const iconColor = item.iconColor || style.color;
           return (
-            <Animated.View key={item.id} entering={FadeInUp.delay(idx * 80)}>
+            <Animated.View key={item.id || idx} entering={FadeInUp.delay(idx * 80)}>
               <TouchableOpacity
-                onPress={() => Alert.alert(item.title, item.body)}
+                onPress={() => Alert.alert(item.title, item.body || item.content || '')}
                 className="bg-white rounded-3xl p-4 mb-3 shadow-sm border border-gray-100 flex-row items-start justify-between"
               >
                 <View className="flex-row items-start flex-1 pr-2">
-                  <View className={`w-13 h-13 rounded-2xl items-center justify-center mr-3.5 ${item.bgColor}`}>
-                    <IconComp size={22} color={item.iconColor} />
+                  <View
+                    style={{ backgroundColor: bgColor, width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}
+                  >
+                    <Megaphone size={20} color={iconColor} />
                   </View>
 
                   <View className="flex-1">
                     <Text className="text-gray-900 font-extrabold text-base leading-snug">{item.title}</Text>
 
                     <View className="mt-1 self-start bg-gray-100 px-2.5 py-0.5 rounded-md">
-                      <Text className="text-gray-600 text-[10px] font-bold">{item.category}</Text>
+                      <Text className="text-gray-600 text-[10px] font-bold">{item.category || 'General'}</Text>
                     </View>
 
                     <Text className="text-gray-500 text-xs font-medium mt-2 leading-relaxed" numberOfLines={2}>
-                      {item.body}
+                      {item.body || item.content || ''}
                     </Text>
                   </View>
                 </View>
@@ -318,12 +334,12 @@ export default function NoticeBoardScreen() {
                 {/* Right Side: Date & Arrow */}
                 <View className="items-end">
                   <View className="flex-row items-center mb-1">
-                    <Text className="text-gray-400 text-[11px] font-medium mr-1.5">{item.date}</Text>
+                    <Text className="text-gray-400 text-[11px] font-medium mr-1.5">{item.date || 'Recent'}</Text>
                     {item.unread && (
                       <View className="w-2 h-2 bg-rose-500 rounded-full" />
                     )}
                   </View>
-                  <ChevronRight size={14} color="#94A3B8" className="mt-2" />
+                  <ChevronRight size={14} color="#94A3B8" />
                 </View>
               </TouchableOpacity>
             </Animated.View>

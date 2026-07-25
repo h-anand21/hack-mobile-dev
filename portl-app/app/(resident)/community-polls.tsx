@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
-  ArrowLeft, BarChart3, Search, Filter, Trees, Car, Dumbbell, 
-  Calendar, Shield, ChevronRight, CheckCircle2, Circle, Clock, Users, Megaphone, Send 
+  ArrowLeft, BarChart3, Search, Filter,
+  Calendar, ChevronRight, CheckCircle2, Circle, Clock, Users, Megaphone, Send 
 } from 'lucide-react-native';
 import { apiClient } from '../../services/api/client';
 import { useRouter } from 'expo-router';
@@ -25,8 +25,7 @@ export default function CommunityPollsScreen() {
       status: 'active',
       timeLeft: '2 days left',
       votedCount: 128,
-      icon: Trees,
-      bgColor: 'bg-emerald-100',
+      bgColor: '#D1FAE5',
       iconColor: '#059669',
       options: [
         { id: 0, text: "Yes, I'm In!", percent: 72 },
@@ -41,8 +40,7 @@ export default function CommunityPollsScreen() {
       status: 'active',
       timeLeft: '5 days left',
       votedCount: 96,
-      icon: Car,
-      bgColor: 'bg-blue-100',
+      bgColor: '#DBEAFE',
       iconColor: '#2563EB'
     },
     {
@@ -52,8 +50,7 @@ export default function CommunityPollsScreen() {
       status: 'active',
       timeLeft: '1 week left',
       votedCount: 143,
-      icon: Dumbbell,
-      bgColor: 'bg-purple-100',
+      bgColor: '#EDE9FE',
       iconColor: '#7C3AED'
     },
     {
@@ -64,8 +61,7 @@ export default function CommunityPollsScreen() {
       timeLeft: 'Starts in 3 days',
       startDate: '25 May 2025',
       votedCount: 0,
-      icon: Calendar,
-      bgColor: 'bg-amber-100',
+      bgColor: '#FEF3C7',
       iconColor: '#D97706'
     },
     {
@@ -76,8 +72,7 @@ export default function CommunityPollsScreen() {
       timeLeft: 'Closed',
       closeDate: '15 May 2025',
       votedCount: 210,
-      icon: Shield,
-      bgColor: 'bg-gray-100',
+      bgColor: '#F3F4F6',
       iconColor: '#64748B'
     }
   ];
@@ -87,8 +82,19 @@ export default function CommunityPollsScreen() {
   const fetchPolls = async () => {
     try {
       const { data } = await apiClient.get('/api/polls');
-      if (data?.success && data?.polls?.length > 0) {
-        setPolls(data.polls);
+      if (data?.success && Array.isArray(data?.polls) && data.polls.length > 0) {
+        const normalized = data.polls.map((p: any) => ({
+          id: p.id || String(Math.random()),
+          title: p.title || p.question || 'Community Poll',
+          subtitle: p.description || p.subtitle || '',
+          status: p.status || p.is_active ? 'active' : 'closed',
+          timeLeft: p.ends_at ? 'Ends soon' : (p.timeLeft || ''),
+          votedCount: p.vote_count || p.votedCount || 0,
+          bgColor: '#D1FAE5',
+          iconColor: '#059669',
+          options: Array.isArray(p.options) ? p.options : []
+        }));
+        setPolls(normalized);
       }
     } catch (e) {
       setPolls(defaultPolls);
@@ -110,14 +116,14 @@ export default function CommunityPollsScreen() {
     Alert.alert('Vote Recorded 🎉', 'Thank you for building a better community!');
   };
 
-  const filteredPolls = polls.filter(p => {
+  const filteredPolls = (Array.isArray(polls) ? polls : []).filter(p => {
     if (activeTab === 'active' && p.status !== 'active') return false;
     if (activeTab === 'upcoming' && p.status !== 'upcoming') return false;
     if (activeTab === 'closed' && p.status !== 'closed') return false;
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return p.title.toLowerCase().includes(q) || (p.subtitle && p.subtitle.toLowerCase().includes(q));
+      return (p.title || '').toLowerCase().includes(q) || ((p.subtitle || '').toLowerCase().includes(q));
     }
     return true;
   });
@@ -314,17 +320,20 @@ export default function CommunityPollsScreen() {
 
         {/* LIST OF OTHER POLLS */}
         {filteredPolls.slice(1).map((item, idx) => {
-          const IconComp = item.icon;
+          const bgColor = item.bgColor || '#F3F4F6';
+          const iconColor = item.iconColor || '#475569';
 
           return (
-            <Animated.View key={item.id} entering={FadeInUp.delay(idx * 80)}>
+            <Animated.View key={item.id || idx} entering={FadeInUp.delay(idx * 80)}>
               <TouchableOpacity
-                onPress={() => Alert.alert(item.title, `Status: ${item.status}\n${item.subtitle}`)}
-                className="bg-white rounded-3xl p-4.5 mb-3 shadow-sm border border-gray-100 flex-row items-start justify-between"
+                onPress={() => Alert.alert(item.title, `Status: ${item.status || ''}\n${item.subtitle || ''}`)}
+                className="bg-white rounded-3xl p-4 mb-3 shadow-sm border border-gray-100 flex-row items-start justify-between"
               >
                 <View className="flex-row items-start flex-1 pr-2">
-                  <View className={`w-13 h-13 rounded-2xl items-center justify-center mr-3.5 ${item.bgColor}`}>
-                    <IconComp size={22} color={item.iconColor} />
+                  <View
+                    style={{ backgroundColor: bgColor, width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 14 }}
+                  >
+                    <BarChart3 size={22} color={iconColor} />
                   </View>
 
                   <View className="flex-1">
@@ -351,9 +360,9 @@ export default function CommunityPollsScreen() {
                     <Text className="text-gray-900 font-extrabold text-sm leading-snug">{item.title}</Text>
 
                     <View className="flex-row items-center mt-2">
-                      <Users size={12} color="#64748B" className="mr-1.5" />
-                      <Text className="text-gray-500 text-[11px] font-semibold">
-                        {item.votedCount > 0 ? `${item.votedCount} residents voted` : item.subtitle}
+                      <Users size={12} color="#64748B" />
+                      <Text className="text-gray-500 text-[11px] font-semibold ml-1.5">
+                        {item.votedCount > 0 ? `${item.votedCount} residents voted` : (item.subtitle || '')}
                       </Text>
                     </View>
                   </View>
@@ -362,8 +371,8 @@ export default function CommunityPollsScreen() {
                 {/* Right Side: Time & Arrow */}
                 <View className="items-end">
                   <View className="flex-row items-center mb-1">
-                    <Clock size={11} color="#94A3B8" className="mr-1" />
-                    <Text className="text-gray-400 text-[10px] font-medium">{item.timeLeft}</Text>
+                    <Clock size={11} color="#94A3B8" />
+                    <Text className="text-gray-400 text-[10px] font-medium ml-1">{item.timeLeft || ''}</Text>
                   </View>
                   {item.status === 'closed' ? (
                     <TouchableOpacity 
@@ -374,7 +383,7 @@ export default function CommunityPollsScreen() {
                       <ChevronRight size={14} color="#047857" />
                     </TouchableOpacity>
                   ) : (
-                    <ChevronRight size={14} color="#94A3B8" className="mt-3" />
+                    <ChevronRight size={14} color="#94A3B8" />
                   )}
                 </View>
               </TouchableOpacity>

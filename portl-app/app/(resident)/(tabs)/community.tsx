@@ -47,8 +47,19 @@ export default function CommunityTab() {
       else setNotices(defaultNotices);
 
       const { data: pData } = await apiClient.get('/api/polls');
-      if (pData?.success && pData?.polls?.length > 0) setPolls(pData.polls);
-      else setPolls(defaultPolls);
+      if (pData?.success && Array.isArray(pData?.polls) && pData.polls.length > 0) {
+        // Normalize poll shape: backend may use 'title' instead of 'question'
+        const normalized = pData.polls.map((p: any) => ({
+          ...p,
+          question: p.question || p.title || 'Community Poll',
+          options: Array.isArray(p.options) && p.options.length > 0
+            ? p.options
+            : [{ id: 1, text: 'Option A' }, { id: 2, text: 'Option B' }]
+        }));
+        setPolls(normalized);
+      } else {
+        setPolls(defaultPolls);
+      }
     } catch (error) {
       setNotices(defaultNotices);
       setPolls(defaultPolls);
@@ -98,7 +109,7 @@ export default function CommunityTab() {
           <Text className="text-purple-600 font-bold text-xs">Live</Text>
         </View>
 
-        {polls.map((poll, idx) => (
+        {(Array.isArray(polls) ? polls : []).map((poll, idx) => (
           <Animated.View 
             key={poll.id} 
             entering={FadeInUp.delay(idx * 100)}
@@ -114,7 +125,7 @@ export default function CommunityTab() {
             <Text className="text-gray-900 font-extrabold text-base mb-4">{poll.question}</Text>
 
             <View className="space-y-2.5">
-              {poll.options.map((opt: any) => {
+              {(Array.isArray(poll.options) ? poll.options : []).map((opt: any) => {
                 const isSelected = poll.my_vote === opt.id;
                 return (
                   <TouchableOpacity
@@ -147,7 +158,7 @@ export default function CommunityTab() {
           <Text className="text-blue-600 font-bold text-xs">Recent</Text>
         </View>
 
-        {notices.map((n, idx) => (
+        {(Array.isArray(notices) ? notices : []).map((n, idx) => (
           <Animated.View 
             key={n.id} 
             entering={FadeInUp.delay(idx * 100)}
