@@ -1,5 +1,5 @@
-import { Redirect } from 'expo-router';
+import React from 'react';
 
-export default function NotificationsTabRedirect() {
-  return <Redirect href="/(resident)/notifications" />;
+export default function NotificationsTabDummy() {
+  return null;
 }
