@@ -109,11 +109,12 @@ export default function RootLayout() {
     
     if (!segments || segments.length === 0) return;
 
-    // Use requestAnimationFrame / setTimeout so router.replace executes after React Navigation finishes mounting
+    const isAuthenticated = !!(session || role);
+
     const timer = setTimeout(() => {
-      if (!session && !inAuthGroup && segments[0] !== '') {
+      if (!isAuthenticated && !inAuthGroup && segments[0] !== '') {
         router.replace('/(auth)/login');
-      } else if (session && role) {
+      } else if (isAuthenticated && role) {
         if (role === 'resident' && !inResidentGroup) {
           router.replace('/(resident)/(tabs)');
         } else if (role === 'guard' && !inGuardGroup) {

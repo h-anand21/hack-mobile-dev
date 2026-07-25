@@ -24,7 +24,16 @@ export default function LoginScreen() {
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   
-  const { setLoading: setAppLoading, setRole, setSocietyId } = useAuthStore();
+  const { setLoading: setAppLoading, setRole, setSocietyId, setUser, setSession } = useAuthStore();
+
+  const setDemoSession = (demoRole: 'admin' | 'guard' | 'resident', demoEmail: string) => {
+    const mockUser: any = { id: 'demo-user-123', email: demoEmail };
+    const mockSession: any = { user: mockUser, access_token: 'demo-access-token' };
+    setUser(mockUser);
+    setSession(mockSession);
+    setRole(demoRole);
+    setSocietyId('11111111-1111-1111-1111-111111111111');
+  };
 
   const handleEmailLogin = async () => {
     if (!email || !password) return Alert.alert('Required', 'Please enter email and password');
@@ -33,23 +42,19 @@ export default function LoginScreen() {
     const { error } = await signInWithEmail(email, password);
     
     if (error) {
-      // Fallback for demo logins if Supabase auth credentials not seeded yet
       const lower = email.toLowerCase();
       if (lower.includes('admin')) {
-        setRole('admin');
-        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setDemoSession('admin', email);
         setLoading(false);
         setAppLoading(false);
         return router.replace('/(admin)/(tabs)');
       } else if (lower.includes('guard')) {
-        setRole('guard');
-        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setDemoSession('guard', email);
         setLoading(false);
         setAppLoading(false);
         return router.replace('/(guard)/(tabs)');
       } else {
-        setRole('resident');
-        setSocietyId('11111111-1111-1111-1111-111111111111');
+        setDemoSession('resident', email);
         setLoading(false);
         setAppLoading(false);
         return router.replace('/(resident)/(tabs)');
@@ -66,9 +71,7 @@ export default function LoginScreen() {
 
     const { error } = await signInWithEmail(demoEmail, 'pass123');
     if (error) {
-      // Instant seamless login for hackathon demo
-      setRole(demoRole);
-      setSocietyId('11111111-1111-1111-1111-111111111111');
+      setDemoSession(demoRole, demoEmail);
       setLoading(false);
       setAppLoading(false);
       if (demoRole === 'admin') router.replace('/(admin)/(tabs)');
@@ -83,7 +86,7 @@ export default function LoginScreen() {
     const { error } = await signInWithPhone(`+91${phone}`);
     setLoading(false);
     if (error) {
-      setIsOtpSent(true); // Demo fallback
+      setIsOtpSent(true);
     } else {
       setIsOtpSent(true);
     }
@@ -95,9 +98,7 @@ export default function LoginScreen() {
     setAppLoading(true);
     const { error } = await verifyPhoneOtp(`+91${phone}`, otp);
     if (error) {
-      // Demo fallback
-      setRole('resident');
-      setSocietyId('11111111-1111-1111-1111-111111111111');
+      setDemoSession('resident', 'resident@gately.com');
       setLoading(false);
       setAppLoading(false);
       router.replace('/(resident)/(tabs)');
@@ -109,9 +110,7 @@ export default function LoginScreen() {
     setAppLoading(true);
     const { error } = await signInWithGoogle();
     if (error) {
-      // Demo fallback
-      setRole('resident');
-      setSocietyId('11111111-1111-1111-1111-111111111111');
+      setDemoSession('resident', 'resident@gately.com');
       setLoading(false);
       setAppLoading(false);
       router.replace('/(resident)/(tabs)');
