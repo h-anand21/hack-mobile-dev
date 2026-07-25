@@ -112,13 +112,16 @@ export default function ResidentDashboard() {
         {/* HEADER SECTION */}
         <Animated.View entering={FadeInUp.duration(500)} className="flex-row justify-between items-center mt-3 mb-6">
           <View className="flex-row items-center">
-            <View className="relative mr-3">
+            <TouchableOpacity 
+              onPress={() => router.push('/(resident)/(tabs)/profile')}
+              className="relative mr-3"
+            >
               <Image 
                 source={{ uri: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80' }} 
                 className="w-14 h-14 rounded-full border-2 border-[#A3E635]"
               />
               <View className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white" />
-            </View>
+            </TouchableOpacity>
             <View>
               <Text className="text-gray-500 text-xs font-semibold">Good Morning,</Text>
               <Text className="text-gray-900 text-xl font-extrabold capitalize">{userName} 👋</Text>
