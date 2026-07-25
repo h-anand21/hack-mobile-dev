@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { 
   ArrowLeft, MoreHorizontal, Phone, Clock, MessageSquare, Home, 
-  Plus, Check, X, ShieldCheck, Truck, UserCheck, Send, CheckCircle2, XCircle
+  Plus, Check, X, ShieldCheck, Truck, UserCheck, Send, CheckCircle2, XCircle, Users, ChevronRight
 } from 'lucide-react-native';
 import { apiClient } from '../../services/api/client';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -80,31 +80,58 @@ export default function VisitorDetailsScreen() {
         {/* MAIN PROFILE CARD */}
         <Animated.View entering={FadeInUp.duration(500)} className="bg-white rounded-3xl p-5 mb-5 shadow-sm border border-gray-100">
           <View className="flex-row justify-between items-start mb-4">
-            <View className="flex-row items-center flex-1">
-              <View className="relative mr-4">
-                <Image 
-                  source={{ uri: visitor.photo_url }} 
-                  className="w-20 h-20 rounded-full bg-gray-200" 
-                />
-                <View className="absolute top-0 left-0 w-6 h-6 bg-[#D2FC52] rounded-full items-center justify-center border-2 border-white">
-                  <Truck size={12} color="#1E293B" />
-                </View>
+            {/* Photo Column */}
+            <View className="relative mr-3.5">
+              <Image 
+                source={{ uri: visitor.photo_url }} 
+                className="w-20 h-20 rounded-full bg-gray-200" 
+              />
+              <View className="absolute top-0 left-0 w-6 h-6 bg-[#D2FC52] rounded-full items-center justify-center border-2 border-white shadow-xs">
+                <Truck size={12} color="#1E293B" />
               </View>
+            </View>
 
-              <View className="flex-1">
-                <View className="flex-row items-center">
-                  <Text className="text-gray-900 font-black text-xl mr-1.5">{visitor.name}</Text>
+            {/* Info Column */}
+            <View className="flex-1 pr-2">
+              <View className="flex-row items-center">
+                <Text className="text-gray-900 font-black text-lg mr-1.5">{visitor.name}</Text>
+                {visitor.verified && (
                   <View className="w-4 h-4 bg-emerald-500 rounded-full items-center justify-center">
                     <Check size={10} color="#FFFFFF" />
                   </View>
-                </View>
-                <Text className="text-gray-500 font-semibold text-xs mt-0.5">{visitor.purpose}</Text>
+                )}
+              </View>
+              <Text className="text-gray-500 font-semibold text-xs mt-0.5">{visitor.purpose}</Text>
 
-                {/* Status Badge */}
-                <View className="mt-2 self-start bg-[#E2F8EE] px-3 py-1 rounded-full flex-row items-center">
-                  <Text className="text-emerald-700 font-extrabold text-[10px] uppercase">
-                    {status === 'pending' ? 'Pending Approval' : status === 'approved' ? 'Approved Entry' : 'Rejected'}
-                  </Text>
+              {/* Status Badge */}
+              <View className="mt-1.5 self-start bg-[#E2F8EE] px-2.5 py-0.5 rounded-full flex-row items-center">
+                <Text className="text-emerald-700 font-extrabold text-[10px]">
+                  {status === 'pending' ? 'Pending Approval' : status === 'approved' ? 'Approved Entry' : 'Rejected'}
+                </Text>
+              </View>
+
+              {/* Info Items List */}
+              <View className="mt-2.5 space-y-1">
+                <View className="flex-row items-center">
+                  <Clock size={12} color="#64748B" className="mr-1.5" />
+                  <Text className="text-gray-600 text-[11px] font-semibold">{visitor.timeAgo}</Text>
+                </View>
+
+                {visitor.vehicle_number && (
+                  <View className="flex-row items-center mt-1">
+                    <Text className="text-gray-500 text-[11px] mr-1.5">🚘</Text>
+                    <Text className="text-gray-700 text-[11px] font-semibold">{visitor.vehicle_number}</Text>
+                  </View>
+                )}
+
+                <View className="flex-row items-center mt-1">
+                  <Phone size={12} color="#64748B" className="mr-1.5" />
+                  <Text className="text-gray-700 text-[11px] font-semibold">{visitor.phone}</Text>
+                </View>
+
+                <View className="flex-row items-center mt-1">
+                  <Users size={12} color="#16A34A" className="mr-1.5" />
+                  <Text className="text-emerald-700 text-[11px] font-bold">ID Proof Verified ✔️</Text>
                 </View>
               </View>
             </View>
@@ -112,57 +139,34 @@ export default function VisitorDetailsScreen() {
             {/* Call Button */}
             <TouchableOpacity 
               onPress={() => Alert.alert('Calling', `Calling ${visitor.name}...`)}
-              className="w-11 h-11 bg-[#E2F898] rounded-full items-center justify-center border border-gray-100 shadow-xs"
+              className="w-10 h-10 bg-[#E2F898] rounded-full items-center justify-center border border-gray-100 shadow-xs"
             >
-              <Phone size={20} color="#1E293B" />
+              <Phone size={18} color="#1E293B" />
             </TouchableOpacity>
           </View>
 
-          {/* Details Info List */}
-          <View className="space-y-2 mb-4 pt-2 border-t border-gray-100">
-            <View className="flex-row items-center py-1">
-              <Clock size={15} color="#64748B" className="mr-2.5" />
-              <Text className="text-gray-600 text-xs font-semibold">{visitor.timeAgo}</Text>
-            </View>
-
-            {visitor.vehicle_number && (
-              <View className="flex-row items-center py-1">
-                <Text className="text-gray-500 text-xs mr-2.5">🚘</Text>
-                <Text className="text-gray-700 text-xs font-semibold">{visitor.vehicle_number}</Text>
-              </View>
-            )}
-
-            <View className="flex-row items-center py-1">
-              <Phone size={15} color="#64748B" className="mr-2.5" />
-              <Text className="text-gray-700 text-xs font-semibold">{visitor.phone}</Text>
-            </View>
-
-            <View className="flex-row items-center py-1">
-              <ShieldCheck size={15} color="#16A34A" className="mr-2.5" />
-              <Text className="text-emerald-700 text-xs font-bold">ID Proof Verified ✔️</Text>
-            </View>
-          </View>
-
-          {/* Purpose Light Box */}
+          {/* PURPOSE LIGHT BOX */}
           <View className="bg-gray-50 p-3.5 rounded-2xl flex-row items-center justify-between mb-2.5 border border-gray-100">
-            <View className="flex-row items-center flex-1">
+            <View className="flex-row items-center flex-1 pr-2">
               <MessageSquare size={16} color="#64748B" className="mr-3" />
               <View className="flex-1">
                 <Text className="text-gray-400 text-[10px] font-bold uppercase">Purpose</Text>
                 <Text className="text-gray-900 font-extrabold text-xs mt-0.5">{visitor.purpose}</Text>
               </View>
             </View>
+            <ChevronRight size={14} color="#94A3B8" />
           </View>
 
-          {/* Visiting Light Box */}
+          {/* VISITING LIGHT BOX */}
           <View className="bg-gray-50 p-3.5 rounded-2xl flex-row items-center justify-between border border-gray-100">
-            <View className="flex-row items-center flex-1">
+            <View className="flex-row items-center flex-1 pr-2">
               <Home size={16} color="#64748B" className="mr-3" />
               <View className="flex-1">
                 <Text className="text-gray-400 text-[10px] font-bold uppercase">Visiting</Text>
                 <Text className="text-gray-900 font-extrabold text-xs mt-0.5">{visitor.visitingFlat}</Text>
               </View>
             </View>
+            <ChevronRight size={14} color="#94A3B8" />
           </View>
         </Animated.View>
 
@@ -215,10 +219,13 @@ export default function VisitorDetailsScreen() {
         <Animated.View entering={FadeInUp.delay(200)} className="mb-6">
           <Text className="text-gray-900 font-extrabold text-base mb-4 px-1">Visitor Timeline</Text>
 
-          <View className="pl-2 space-y-4">
+          <View className="pl-1 space-y-4 relative">
+            {/* Vertical Line Connector */}
+            <View className="absolute top-4 bottom-4 left-4 w-0.5 bg-gray-200 z-0" />
+
             {/* Step 1 */}
-            <View className="flex-row items-start">
-              <View className="w-8 h-8 bg-amber-100 rounded-full items-center justify-center mr-3">
+            <View className="flex-row items-start z-10">
+              <View className="w-8 h-8 bg-amber-100 rounded-full items-center justify-center mr-3 border-2 border-white">
                 <UserCheck size={14} color="#D97706" />
               </View>
               <View className="flex-1 flex-row justify-between items-start border-b border-gray-100 pb-3">
@@ -231,8 +238,8 @@ export default function VisitorDetailsScreen() {
             </View>
 
             {/* Step 2 */}
-            <View className="flex-row items-start">
-              <View className="w-8 h-8 bg-purple-100 rounded-full items-center justify-center mr-3">
+            <View className="flex-row items-start z-10">
+              <View className="w-8 h-8 bg-purple-100 rounded-full items-center justify-center mr-3 border-2 border-white">
                 <Send size={14} color="#7C3AED" />
               </View>
               <View className="flex-1 flex-row justify-between items-start border-b border-gray-100 pb-3">
@@ -245,8 +252,8 @@ export default function VisitorDetailsScreen() {
             </View>
 
             {/* Step 3 */}
-            <View className="flex-row items-start">
-              <View className="w-8 h-8 bg-[#E2F898] rounded-full items-center justify-center mr-3">
+            <View className="flex-row items-start z-10">
+              <View className="w-8 h-8 bg-[#E2F898] rounded-full items-center justify-center mr-3 border-2 border-white">
                 <Clock size={14} color="#1E293B" />
               </View>
               <View className="flex-1 flex-row justify-between items-start">
