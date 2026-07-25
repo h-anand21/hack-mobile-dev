@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Home, Headset, CalendarDays, Megaphone, IndianRupee } from 'lucide-react-native';
+import { Home, Users, Megaphone, Calendar, Wrench } from 'lucide-react-native';
 
 export default function ResidentTabsLayout() {
   return (
@@ -8,47 +8,58 @@ export default function ResidentTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#171717',
-          borderTopColor: '#333',
-          paddingTop: 10,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#F1F5F9',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 10,
+          height: 65,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
-        tabBarActiveTintColor: '#E7FF45',
-        tabBarInactiveTintColor: '#666',
+        tabBarActiveTintColor: '#0F172A',
+        tabBarInactiveTintColor: '#94A3B8',
+        tabBarLabelStyle: {
+          fontWeight: '700',
+          fontSize: 10,
+        }
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Home color={color} size={24} />,
+          tabBarIcon: ({ color }) => <Home color={color} size={22} />,
         }}
       />
       <Tabs.Screen
-        name="services"
+        name="visitors"
         options={{
-          title: 'Book',
-          tabBarIcon: ({ color }) => <CalendarDays color={color} size={24} />,
-        }}
-      />
-      <Tabs.Screen
-        name="complaints"
-        options={{
-          title: 'Help',
-          tabBarIcon: ({ color }) => <Headset color={color} size={24} />,
+          title: 'Visitors',
+          tabBarIcon: ({ color }) => <Users color={color} size={22} />,
         }}
       />
       <Tabs.Screen
         name="community"
         options={{
           title: 'Notice',
-          tabBarIcon: ({ color }) => <Megaphone color={color} size={24} />,
+          tabBarIcon: ({ color }) => <Megaphone color={color} size={22} />,
         }}
       />
       <Tabs.Screen
-        name="payments"
+        name="services"
         options={{
-          title: 'Dues',
-          tabBarIcon: ({ color }) => <IndianRupee color={color} size={24} />,
+          title: 'Bookings',
+          tabBarIcon: ({ color }) => <Calendar color={color} size={22} />,
+        }}
+      />
+      <Tabs.Screen
+        name="complaints"
+        options={{
+          title: 'Helpdesk',
+          tabBarIcon: ({ color }) => <Wrench color={color} size={22} />,
         }}
       />
     </Tabs>
