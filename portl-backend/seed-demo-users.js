@@ -25,9 +25,9 @@ async function seedDemoUsers() {
     .from('societies')
     .upsert({
       id: societyId,
-      name: 'Portl Grand Residency',
+      name: 'Gately Grand Residency',
       address: '123 Smart City, Sector 4, Bangalore',
-      code: 'PORTL-001'
+      code: 'GATELY-001'
     })
     .select()
     .single();
@@ -41,25 +41,25 @@ async function seedDemoUsers() {
   // 2. Demo Users list
   const usersToSeed = [
     {
-      email: 'admin@portl.com',
+      email: 'admin@gately.com',
       password: 'pass123',
       name: 'Demo Admin',
       role: 'admin',
-      phone: '+919999900001'
+      phone: '+919999911101'
     },
     {
-      email: 'guard@portl.com',
+      email: 'guard@gately.com',
       password: 'pass123',
       name: 'Demo Guard',
       role: 'guard',
-      phone: '+919999900002'
+      phone: '+919999911102'
     },
     {
-      email: 'resident@portl.com',
+      email: 'resident@gately.com',
       password: 'pass123',
       name: 'Demo Resident',
       role: 'resident',
-      phone: '+919999900003'
+      phone: '+919999911103'
     }
   ];
 

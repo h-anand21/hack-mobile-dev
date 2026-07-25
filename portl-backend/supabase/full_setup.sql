@@ -1,5 +1,5 @@
 -- ===================================================
--- PORTL COMPLETE SUPABASE DATABASE SETUP SCRIPT
+-- GATELY COMPLETE SUPABASE DATABASE SETUP SCRIPT
 -- Run this script in your Supabase SQL Editor:
 -- Dashboard -> SQL Editor -> New Query -> Paste & Run
 -- ===================================================
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS amenity_bookings (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- RLS Security Policies (Permissive for app development)
+-- RLS Security Policies
 ALTER TABLE societies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE flats ENABLE ROW LEVEL SECURITY;
@@ -187,9 +187,9 @@ END $$;
 INSERT INTO societies (id, name, address, code)
 VALUES (
   '11111111-1111-1111-1111-111111111111', 
-  'Portl Grand Residency', 
+  'Gately Grand Residency', 
   '123 Smart City, Sector 4, Bangalore', 
-  'PORTL-001'
+  'GATELY-001'
 ) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO flats (id, society_id, tower, flat_number)
@@ -213,3 +213,4 @@ VALUES
 INSERT INTO polls (society_id, question, options, ends_at)
 VALUES 
   ('11111111-1111-1111-1111-111111111111', 'Should we hire an additional security guard for the night shift?', '[{"id": 1, "text": "Yes"}, {"id": 2, "text": "No"}]', NOW() + interval '7 days');
+
