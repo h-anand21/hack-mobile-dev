@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Home, Users, Wrench, User } from 'lucide-react-native';
+import { Home, Users, Wrench, User, Bell } from 'lucide-react-native';
+import { View, Text } from 'react-native';
 
 export default function ResidentTabsLayout() {
   return (
@@ -58,7 +59,32 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* 4. PROFILE */}
+      {/* 4. NOTIFICATIONS */}
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Alerts',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ position: 'relative' }}>
+              <Bell color={color} size={22} />
+              {/* Notification badge dot */}
+              <View style={{
+                position: 'absolute',
+                top: -2,
+                right: -4,
+                width: 8,
+                height: 8,
+                backgroundColor: '#F43F5E',
+                borderRadius: 4,
+                borderWidth: 1.5,
+                borderColor: '#1E293B',
+              }} />
+            </View>
+          ),
+        }}
+      />
+
+      {/* 5. PROFILE */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -67,30 +93,18 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* HIDE NOTIFICATIONS & OTHER PAGES FROM BOTTOM BAR */}
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          href: null,
-        }}
-      />
+      {/* HIDE OTHER PAGES FROM BOTTOM BAR */}
       <Tabs.Screen
         name="community"
-        options={{
-          href: null,
-        }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="services"
-        options={{
-          href: null,
-        }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="payments"
-        options={{
-          href: null,
-        }}
+        options={{ href: null }}
       />
     </Tabs>
   );
