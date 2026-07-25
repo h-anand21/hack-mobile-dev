@@ -134,7 +134,7 @@ export default function ResidentDashboard() {
             </TouchableOpacity>
 
             <TouchableOpacity 
-              onPress={signOut}
+              onPress={() => router.push('/(resident)/notifications')}
               className="w-11 h-11 bg-white rounded-full items-center justify-center border border-gray-100 shadow-sm relative"
             >
               <Bell size={20} color="#1E293B" />

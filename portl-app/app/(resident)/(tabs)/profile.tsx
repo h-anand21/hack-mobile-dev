@@ -93,6 +93,22 @@ export default function ProfileTab() {
             className="p-3.5 rounded-2xl flex-row items-center justify-between"
           >
             <View className="flex-row items-center">
+              <View className="w-10 h-10 bg-[#E2F898] rounded-2xl items-center justify-center mr-3">
+                <Calendar size={18} color="#1E293B" />
+              </View>
+              <View>
+                <Text className="text-gray-900 font-bold text-sm">Amenity Bookings</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">Book Gym, Pool, Badminton & Hall</Text>
+              </View>
+            </View>
+            <ChevronRight size={16} color="#94A3B8" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => router.push('/(resident)/(tabs)/services')}
+            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center">
               <View className="w-10 h-10 bg-amber-50 rounded-2xl items-center justify-center mr-3">
                 <Car size={18} color="#D97706" />
               </View>

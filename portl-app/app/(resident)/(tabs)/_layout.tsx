@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Home, Users, Wrench, Bell, User } from 'lucide-react-native';
+import { Home, Users, Wrench, User } from 'lucide-react-native';
 
 export default function ResidentTabsLayout() {
   return (
@@ -50,7 +49,7 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* 3. HELPDESK (As shown in reference mock image) */}
+      {/* 3. HELPDESK */}
       <Tabs.Screen
         name="complaints"
         options={{
@@ -59,23 +58,7 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* 4. NOTIFICATIONS */}
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: 'Notifications',
-          tabBarIcon: ({ color }) => (
-            <View className="relative">
-              <Bell color={color} size={22} />
-              <View className="absolute -top-1 -right-2 bg-rose-500 w-4 h-4 rounded-full items-center justify-center border-2 border-[#1E293B]">
-                <Text className="text-white text-[9px] font-black">3</Text>
-              </View>
-            </View>
-          ),
-        }}
-      />
-
-      {/* 5. PROFILE */}
+      {/* 4. PROFILE */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -84,7 +67,13 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* HIDE OTHER PAGES FROM BOTTOM BAR */}
+      {/* HIDE NOTIFICATIONS & OTHER PAGES FROM BOTTOM BAR */}
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          href: null,
+        }}
+      />
       <Tabs.Screen
         name="community"
         options={{
