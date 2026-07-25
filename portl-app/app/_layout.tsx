@@ -8,12 +8,10 @@ import { supabase } from '../services/supabase/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
-import '../app/global.css'; // NativeWind CSS
+import '../app/global.css';
 
-// Keep splash screen visible while loading resources
 SplashScreen.preventAutoHideAsync();
 
-// Only set notification handler in standalone/development builds (NOT Expo Go)
 const isExpoGo = Constants.appOwnership === 'expo';
 if (!isExpoGo) {
   const Notifications = require('expo-notifications');
@@ -31,17 +29,23 @@ if (!isExpoGo) {
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const [isMounted, setIsMounted] = useState(false);
   const [fontsLoaded] = useFonts({
-    // Will add Inter/Outfit fonts later if needed
+    // Add custom fonts here if needed
   });
 
   const { setSession, setUser, setRole, setSocietyId, setLoading, isLoading, session, role } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
 
+  // Track component mount status
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
   // Handle auth state changes
   useEffect(() => {
-    // Initial session fetch
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -52,7 +56,6 @@ export default function RootLayout() {
       }
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -80,7 +83,6 @@ export default function RootLayout() {
         setRole(data.role as any);
         setSocietyId(data.society_id);
       } else {
-        // Fallback for user role detection if DB profile missing
         const { data: userData } = await supabase.auth.getUser();
         const email = userData?.user?.email?.toLowerCase() || '';
         if (email.includes('admin')) setRole('admin');
@@ -96,32 +98,34 @@ export default function RootLayout() {
     }
   };
 
-  // Handle routing based on auth state
+  // Safe router navigation only after component is fully mounted
   useEffect(() => {
-    if (isLoading || !fontsLoaded) return;
+    if (!isMounted || isLoading || !fontsLoaded) return;
 
     const inAuthGroup = segments[0] === '(auth)';
     const inResidentGroup = segments[0] === '(resident)';
     const inGuardGroup = segments[0] === '(guard)';
     const inAdminGroup = segments[0] === '(admin)';
     
-    // Default to onboarding/splash if on root
     if (!segments || segments.length === 0) return;
 
-    if (!session && !inAuthGroup && segments[0] !== '') {
-      // Redirect to login if not authenticated and not in auth/onboarding
-      router.replace('/(auth)/login');
-    } else if (session && role) {
-      // Redirect authenticated users to their respective dashboards
-      if (role === 'resident' && !inResidentGroup) {
-        router.replace('/(resident)/(tabs)');
-      } else if (role === 'guard' && !inGuardGroup) {
-        router.replace('/(guard)/(tabs)');
-      } else if (role === 'admin' && !inAdminGroup) {
-        router.replace('/(admin)/(tabs)');
+    // Use requestAnimationFrame / setTimeout so router.replace executes after React Navigation finishes mounting
+    const timer = setTimeout(() => {
+      if (!session && !inAuthGroup && segments[0] !== '') {
+        router.replace('/(auth)/login');
+      } else if (session && role) {
+        if (role === 'resident' && !inResidentGroup) {
+          router.replace('/(resident)/(tabs)');
+        } else if (role === 'guard' && !inGuardGroup) {
+          router.replace('/(guard)/(tabs)');
+        } else if (role === 'admin' && !inAdminGroup) {
+          router.replace('/(admin)/(tabs)');
+        }
       }
-    }
-  }, [session, isLoading, segments, fontsLoaded, role]);
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [isMounted, session, isLoading, segments, fontsLoaded, role]);
 
   useEffect(() => {
     if (fontsLoaded && !isLoading) {

@@ -96,7 +96,6 @@ export default function NotificationsScreen() {
   };
 
   const handleItemPress = (item: NotificationItem) => {
-    // Mark this item as read
     setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, read: true } : n));
 
     if (item.targetRoute) {
@@ -173,7 +172,7 @@ export default function NotificationsScreen() {
             backgroundColor: '#F8FAFC',
             borderRadius: 20,
             alignItems: 'center',
-            justify.content: 'center',
+            justifyContent: 'center',
             borderWidth: 1,
             borderColor: '#F1F5F9'
           }}
@@ -232,7 +231,7 @@ export default function NotificationsScreen() {
           marginBottom: 18,
           borderWidth: 1,
           borderColor: '#F1F5F9',
-          justify.content: 'space-between'
+          justifyContent: 'space-between'
         }}>
           {[
             { id: 'all', title: 'All' },
@@ -288,7 +287,7 @@ export default function NotificationsScreen() {
                   backgroundColor: '#FFFFFF',
                   flexDirection: 'row',
                   alignItems: 'flex-start',
-                  justify.content: 'space-between'
+                  justifyContent: 'space-between'
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', flex: 1, paddingRight: 8 }}>
@@ -298,7 +297,7 @@ export default function NotificationsScreen() {
                     borderRadius: 14,
                     backgroundColor: config.bgColor,
                     alignItems: 'center',
-                    justify.content: 'center',
+                    justifyContent: 'center',
                     marginRight: 14
                   }}>
                     <IconComp size={20} color={config.iconColor} />
