@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../../store/authStore';
 import { signOut } from '../../../services/supabase/auth';
 import { 
-  User, Home, Car, CreditCard, Wrench, Shield, LogOut, ChevronRight, Bell, Settings, Clock, Users, Calendar, Megaphone 
+  User, Home, Car, CreditCard, Headset, LogOut, ChevronRight, Bell, 
+  Clock, Users, Calendar, Megaphone, Globe, Moon, Shield, Check, MapPin, Mail, Phone 
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -12,168 +13,312 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 export default function ProfileTab() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const userName = user?.email?.split('@')[0] || 'Himanshu';
+  const userName = user?.email ? user.email.split('@')[0].replace('.', ' ') : 'Himanshu Anand';
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FB]">
-      {/* HEADER */}
+      {/* HEADER BAR */}
       <View className="px-5 pt-3 pb-4 bg-white border-b border-gray-100 flex-row justify-between items-center">
-        <Text className="text-gray-900 font-extrabold text-xl">My Profile</Text>
+        <View>
+          <Text className="text-gray-900 font-black text-2xl">My Profile</Text>
+          <Text className="text-gray-400 text-xs font-semibold mt-0.5">Manage your account and preferences</Text>
+        </View>
+
         <TouchableOpacity 
           onPress={signOut}
-          className="w-10 h-10 bg-rose-50 rounded-full items-center justify-center border border-rose-100"
+          className="w-10 h-10 bg-rose-50 rounded-full items-center justify-center border border-rose-100 shadow-xs"
         >
           <LogOut size={18} color="#E11D48" />
         </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false}>
-        {/* PROFILE HERO CARD */}
-        <Animated.View entering={FadeInUp.duration(500)} className="bg-white p-6 rounded-3xl mb-5 shadow-sm border border-gray-100 items-center">
-          <View className="relative mb-3">
-            <Image 
-              source={{ uri: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }} 
-              className="w-24 h-24 rounded-full border-4 border-[#D2FC52]"
-            />
-            <View className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white" />
+        {/* HERO USER PROFILE CARD */}
+        <Animated.View entering={FadeInUp.duration(400)} className="bg-white rounded-3xl p-5 mb-5 shadow-sm border border-gray-100">
+          <View className="flex-row items-start mb-4">
+            {/* Avatar Photo with Online Badge */}
+            <View className="relative mr-4">
+              <Image 
+                source={{ uri: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80' }} 
+                className="w-20 h-20 rounded-full border-4 border-[#D2FC52]"
+              />
+              <View className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white" />
+            </View>
+
+            {/* Profile Info */}
+            <View className="flex-1">
+              <Text className="text-gray-900 font-black text-xl capitalize">{userName}</Text>
+
+              {/* Verification Badge */}
+              <View className="mt-1 self-start bg-[#E2F8EE] px-2.5 py-0.5 rounded-full flex-row items-center border border-emerald-100">
+                <Check size={11} color="#059669" className="mr-1" />
+                <Text className="text-emerald-700 font-extrabold text-[10px]">Verified Resident</Text>
+              </View>
+
+              {/* Info Items List */}
+              <View className="mt-2.5 space-y-1">
+                <View className="flex-row items-center">
+                  <Home size={12} color="#64748B" className="mr-2" />
+                  <Text className="text-gray-700 text-[11px] font-semibold">Flat B-302, Tower A</Text>
+                </View>
+                <View className="flex-row items-center mt-0.5">
+                  <Mail size={12} color="#64748B" className="mr-2" />
+                  <Text className="text-gray-600 text-[11px] font-semibold">{user?.email || 'himanshu.anand@email.com'}</Text>
+                </View>
+                <View className="flex-row items-center mt-0.5">
+                  <Phone size={12} color="#64748B" className="mr-2" />
+                  <Text className="text-gray-700 text-[11px] font-semibold">+91 98765 43210</Text>
+                </View>
+                <View className="flex-row items-center mt-0.5">
+                  <MapPin size={12} color="#64748B" className="mr-2" />
+                  <Text className="text-gray-600 text-[11px] font-semibold">Green Meadows Society</Text>
+                </View>
+              </View>
+            </View>
           </View>
 
-          <Text className="text-gray-900 font-black text-2xl capitalize">{userName}</Text>
-          <Text className="text-gray-500 text-xs font-semibold mt-0.5">Flat B-302 • Tower A</Text>
-          <Text className="text-gray-400 text-xs mt-1">{user?.email || 'himanshu@portl.com'}</Text>
+          {/* TWO GRID CARDS BELOW HERO */}
+          <View className="flex-row gap-3 pt-3 border-t border-gray-100">
+            {/* MEMBERS */}
+            <TouchableOpacity 
+              onPress={() => router.push('/(resident)/family-members')}
+              className="flex-1 bg-[#F4FBE4] p-3 rounded-2xl border border-lime-100 flex-row items-center justify-between shadow-xs"
+            >
+              <View className="flex-row items-center flex-1">
+                <View className="w-8 h-8 bg-[#D2FC52] rounded-full items-center justify-center mr-2 shadow-xs">
+                  <Users size={15} color="#163316" />
+                </View>
+                <View>
+                  <Text className="text-gray-500 text-[9px] font-bold uppercase">MEMBERS</Text>
+                  <Text className="text-gray-900 font-black text-xs">4 Family</Text>
+                  <Text className="text-gray-500 text-[8px] font-medium">View & Manage</Text>
+                </View>
+              </View>
+              <ChevronRight size={13} color="#64748B" />
+            </TouchableOpacity>
 
-          <View className="flex-row gap-3 mt-5 w-full">
-            <View className="flex-1 bg-gray-50 p-3 rounded-2xl items-center border border-gray-100">
-              <Text className="text-gray-400 text-[10px] font-bold uppercase">Members</Text>
-              <Text className="text-gray-900 font-black text-base mt-0.5">4 Family</Text>
-            </View>
-            <View className="flex-1 bg-gray-50 p-3 rounded-2xl items-center border border-gray-100">
-              <Text className="text-gray-400 text-[10px] font-bold uppercase">Vehicles</Text>
-              <Text className="text-gray-900 font-black text-base mt-0.5">2 Registered</Text>
-            </View>
+            {/* VEHICLES */}
+            <TouchableOpacity 
+              onPress={() => router.push('/(resident)/registered-vehicles')}
+              className="flex-1 bg-[#F4FBE4] p-3 rounded-2xl border border-lime-100 flex-row items-center justify-between shadow-xs"
+            >
+              <View className="flex-row items-center flex-1">
+                <View className="w-8 h-8 bg-[#D2FC52] rounded-full items-center justify-center mr-2 shadow-xs">
+                  <Car size={15} color="#163316" />
+                </View>
+                <View>
+                  <Text className="text-gray-500 text-[9px] font-bold uppercase">VEHICLES</Text>
+                  <Text className="text-gray-900 font-black text-xs">2 Registered</Text>
+                  <Text className="text-gray-500 text-[8px] font-medium">View & Manage</Text>
+                </View>
+              </View>
+              <ChevronRight size={13} color="#64748B" />
+            </TouchableOpacity>
           </View>
         </Animated.View>
 
-        {/* MENU OPTIONS */}
+        {/* ACCOUNT OPTIONS SECTION */}
         <Text className="text-gray-900 font-extrabold text-base mb-3 px-1">Account Options</Text>
 
-        <View className="bg-white rounded-3xl p-2 border border-gray-100 shadow-sm mb-6 space-y-1">
-          {/* VISITOR HISTORY (Direct Access as shown in mock) */}
+        <Animated.View entering={FadeInUp.delay(100)} className="bg-white rounded-3xl p-2 border border-gray-100 shadow-sm mb-5">
+          {/* 1. VISITOR HISTORY & LOGS */}
           <TouchableOpacity 
             onPress={() => router.push('/(resident)/visitor-history')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            className="p-3 rounded-2xl flex-row items-center justify-between border-b border-gray-50"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-[#E2F898] rounded-2xl items-center justify-center mr-3">
-                <Clock size={18} color="#1E293B" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-[#F4FBE4] rounded-xl items-center justify-center mr-3 border border-lime-100">
+                <Clock size={17} color="#163316" />
               </View>
-              <View>
-                <Text className="text-gray-900 font-bold text-sm">Visitor History & Logs</Text>
-                <Text className="text-gray-400 text-[10px] font-medium">View all 28 past visitor entries</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Visitor History & Logs</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View all past visitor entries</Text>
               </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
 
+          {/* 2. FLAT & FAMILY MEMBERS */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/notice-board')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            onPress={() => router.push('/(resident)/family-members')}
+            className="p-3 rounded-2xl flex-row items-center justify-between border-b border-gray-50"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-[#E2F8EE] rounded-2xl items-center justify-center mr-3">
-                <Megaphone size={18} color="#059669" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-blue-50 rounded-xl items-center justify-center mr-3 border border-blue-100">
+                <Home size={17} color="#2563EB" />
               </View>
-              <View>
-                <Text className="text-gray-900 font-bold text-sm">Notice Board & Updates</Text>
-                <Text className="text-gray-400 text-[10px] font-medium">View society circulars & announcements</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Flat & Family Members</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">Manage flat details and family</Text>
               </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/community')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
-          >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-blue-50 rounded-2xl items-center justify-center mr-3">
-                <Home size={18} color="#2563EB" />
-              </View>
-              <Text className="text-gray-900 font-bold text-sm">Flat & Family Members</Text>
-            </View>
-            <ChevronRight size={16} color="#94A3B8" />
-          </TouchableOpacity>
-
+          {/* 3. AMENITY BOOKINGS */}
           <TouchableOpacity 
             onPress={() => router.push('/(resident)/(tabs)/services')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            className="p-3 rounded-2xl flex-row items-center justify-between border-b border-gray-50"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-[#E2F898] rounded-2xl items-center justify-center mr-3">
-                <Calendar size={18} color="#1E293B" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-amber-50 rounded-xl items-center justify-center mr-3 border border-amber-100">
+                <Calendar size={17} color="#D97706" />
               </View>
-              <View>
-                <Text className="text-gray-900 font-bold text-sm">Amenity Bookings</Text>
-                <Text className="text-gray-400 text-[10px] font-medium">Book Gym, Pool, Badminton & Hall</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Amenity Bookings</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View upcoming and past bookings</Text>
               </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
 
+          {/* 4. REGISTERED VEHICLES */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/services')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            onPress={() => router.push('/(resident)/registered-vehicles')}
+            className="p-3 rounded-2xl flex-row items-center justify-between border-b border-gray-50"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-amber-50 rounded-2xl items-center justify-center mr-3">
-                <Car size={18} color="#D97706" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-orange-50 rounded-xl items-center justify-center mr-3 border border-orange-100">
+                <Car size={17} color="#EA580C" />
               </View>
-              <Text className="text-gray-900 font-bold text-sm">Registered Vehicles</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Registered Vehicles</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View and manage your vehicles</Text>
+              </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
 
+          {/* 5. PAYMENT RECEIPTS & DUES */}
           <TouchableOpacity 
             onPress={() => router.push('/(resident)/(tabs)/payments')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            className="p-3 rounded-2xl flex-row items-center justify-between border-b border-gray-50"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-emerald-50 rounded-2xl items-center justify-center mr-3">
-                <CreditCard size={18} color="#059669" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-emerald-50 rounded-xl items-center justify-center mr-3 border border-emerald-100">
+                <CreditCard size={17} color="#059669" />
               </View>
-              <Text className="text-gray-900 font-bold text-sm">Payment Receipts & Dues</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Payment Receipts & Dues</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View receipts and maintenance dues</Text>
+              </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
 
+          {/* 6. HELPDESK TICKETS */}
           <TouchableOpacity 
             onPress={() => router.push('/(resident)/(tabs)/complaints')}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            className="p-3 rounded-2xl flex-row items-center justify-between"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-purple-50 rounded-2xl items-center justify-center mr-3">
-                <Wrench size={18} color="#7C3AED" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-9 h-9 bg-purple-50 rounded-xl items-center justify-center mr-3 border border-purple-100">
+                <Headset size={17} color="#7C3AED" />
               </View>
-              <Text className="text-gray-900 font-bold text-sm">Helpdesk Tickets</Text>
+              <View className="flex-1">
+                <Text className="text-gray-900 font-bold text-xs">Helpdesk Tickets</Text>
+                <Text className="text-gray-400 text-[10px] font-medium">View your raised complaints</Text>
+              </View>
             </View>
-            <ChevronRight size={16} color="#94A3B8" />
+            <ChevronRight size={15} color="#94A3B8" />
           </TouchableOpacity>
+        </Animated.View>
 
+        {/* QUICK PREFERENCES SECTION */}
+        <Animated.View entering={FadeInUp.delay(200)} className="bg-white rounded-3xl p-4.5 mb-5 shadow-sm border border-gray-100">
+          <Text className="text-gray-900 font-extrabold text-base mb-3.5">Quick Preferences</Text>
+
+          <View className="flex-row justify-between items-center">
+            {/* Notifications */}
+            <TouchableOpacity 
+              onPress={() => router.push('/(resident)/notifications')}
+              className="items-center flex-1"
+            >
+              <View className="w-10 h-10 bg-purple-50 rounded-2xl items-center justify-center mb-1 border border-purple-100">
+                <Bell size={17} color="#7C3AED" />
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-gray-900 font-bold text-[11px] mr-0.5">Notifications</Text>
+                <ChevronRight size={10} color="#94A3B8" />
+              </View>
+            </TouchableOpacity>
+
+            <View className="w-[1px] h-7 bg-gray-100" />
+
+            {/* Language */}
+            <TouchableOpacity 
+              onPress={() => Alert.alert('Language', 'Active Language: English (US)')}
+              className="items-center flex-1"
+            >
+              <View className="w-10 h-10 bg-blue-50 rounded-2xl items-center justify-center mb-1 border border-blue-100">
+                <Globe size={17} color="#2563EB" />
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-gray-900 font-bold text-[11px] mr-0.5">Language</Text>
+                <ChevronRight size={10} color="#94A3B8" />
+              </View>
+              <Text className="text-gray-400 text-[9px] font-semibold">English</Text>
+            </TouchableOpacity>
+
+            <View className="w-[1px] h-7 bg-gray-100" />
+
+            {/* Theme (Light Mode Default) */}
+            <TouchableOpacity 
+              onPress={() => Alert.alert('Theme Settings', 'Light Theme is active as default.')}
+              className="items-center flex-1"
+            >
+              <View className="w-10 h-10 bg-amber-50 rounded-2xl items-center justify-center mb-1 border border-amber-100">
+                <Moon size={17} color="#D97706" />
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-gray-900 font-bold text-[11px] mr-0.5">Theme</Text>
+                <ChevronRight size={10} color="#94A3B8" />
+              </View>
+              <Text className="text-gray-400 text-[9px] font-semibold">Light</Text>
+            </TouchableOpacity>
+
+            <View className="w-[1px] h-7 bg-gray-100" />
+
+            {/* Privacy */}
+            <TouchableOpacity 
+              onPress={() => Alert.alert('Privacy', 'Privacy & Security settings are active.')}
+              className="items-center flex-1"
+            >
+              <View className="w-10 h-10 bg-emerald-50 rounded-2xl items-center justify-center mb-1 border border-emerald-100">
+                <Shield size={17} color="#059669" />
+              </View>
+              <View className="flex-row items-center">
+                <Text className="text-gray-900 font-bold text-[11px] mr-0.5">Privacy</Text>
+                <ChevronRight size={10} color="#94A3B8" />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+
+        {/* HELP & SUPPORT CARD */}
+        <Animated.View entering={FadeInUp.delay(300)} className="mb-6">
           <TouchableOpacity 
-            onPress={signOut}
-            className="p-3.5 rounded-2xl flex-row items-center justify-between"
+            onPress={() => router.push('/(resident)/help-support')}
+            className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex-row items-center justify-between"
           >
-            <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-rose-50 rounded-2xl items-center justify-center mr-3">
-                <LogOut size={18} color="#E11D48" />
+            <View className="flex-row items-center flex-1 pr-2">
+              <View className="w-11 h-11 bg-purple-50 rounded-2xl items-center justify-center mr-3 border border-purple-100">
+                <Headset size={20} color="#7C3AED" />
               </View>
-              <Text className="text-rose-600 font-bold text-sm">Sign Out</Text>
-            </View>
-            <ChevronRight size={16} color="#E11D48" />
-          </TouchableOpacity>
-        </View>
 
-        <View className="h-20" />
+              <View className="flex-1">
+                <Text className="text-gray-900 font-black text-sm">Help & Support</Text>
+                <Text className="text-gray-500 font-semibold text-xs mt-0.5">Get help and contact support</Text>
+              </View>
+            </View>
+
+            <View className="w-8 h-8 bg-purple-100/60 rounded-full items-center justify-center">
+              <ChevronRight size={16} color="#7C3AED" />
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <View className="h-24" />
       </ScrollView>
     </SafeAreaView>
   );

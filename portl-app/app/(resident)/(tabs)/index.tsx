@@ -288,7 +288,7 @@ export default function ResidentDashboard() {
 
           {/* Card 2: Community Poll */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/community')}
+            onPress={() => router.push('/(resident)/community-polls')}
             className="flex-1 bg-[#F3EFFF] p-4 rounded-3xl justify-between border border-purple-100"
           >
             <View>
@@ -304,7 +304,7 @@ export default function ResidentDashboard() {
             </View>
 
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/community-polls')}
               className="mt-3 bg-[#E0D6FF] py-2 rounded-xl items-center"
             >
               <Text className="text-purple-900 font-bold text-xs">Vote Now</Text>
