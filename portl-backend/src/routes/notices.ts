@@ -4,8 +4,8 @@ import { supabaseAdmin } from '../services/supabase';
 
 const router = Router();
 
-// [RESIDENT] Get notices
-router.get('/', requireRole(['resident']), async (req: Request, res: Response): Promise<void> => {
+// [ALL] Get notices for society
+router.get('/', requireRole(['resident', 'admin', 'guard']), async (req: Request, res: Response): Promise<void> => {
   try {
     const societyId = req.user?.society_id;
 
@@ -16,11 +16,12 @@ router.get('/', requireRole(['resident']), async (req: Request, res: Response): 
       .order('created_at', { ascending: false });
 
     if (error) {
-      res.status(500).json({ error: 'Failed to fetch notices' });
+      console.error('Fetch Notices Error:', error);
+      res.status(500).json({ error: 'Failed to fetch notices', details: error.message });
       return;
     }
 
-    res.json({ success: true, notices });
+    res.json({ success: true, notices: notices || [] });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

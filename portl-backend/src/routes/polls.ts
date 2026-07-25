@@ -4,11 +4,11 @@ import { supabaseAdmin } from '../services/supabase';
 
 const router = Router();
 
-// [RESIDENT] Get polls
-router.get('/', requireRole(['resident']), async (req: Request, res: Response): Promise<void> => {
+// [ALL] Get polls
+router.get('/', requireRole(['resident', 'admin', 'guard']), async (req: Request, res: Response): Promise<void> => {
   try {
     const societyId = req.user?.society_id;
-    const residentId = req.user?.id;
+    const userId = req.user?.id;
 
     // Fetch active polls
     const { data: polls, error: pollsError } = await supabaseAdmin
@@ -18,44 +18,46 @@ router.get('/', requireRole(['resident']), async (req: Request, res: Response): 
       .order('created_at', { ascending: false });
 
     if (pollsError) {
-      res.status(500).json({ error: 'Failed to fetch polls' });
+      console.error('Fetch Polls Error:', pollsError);
+      res.status(500).json({ error: 'Failed to fetch polls', details: pollsError.message });
       return;
     }
 
-    // Fetch resident's votes
+    // Fetch user's votes
     const { data: votes } = await supabaseAdmin
-      .from('votes')
-      .select('poll_id, option_index')
-      .eq('user_id', residentId);
+      .from('poll_votes')
+      .select('poll_id, option_id')
+      .eq('user_id', userId);
 
     // Attach votes to polls
     const pollsWithVotes = polls?.map((poll: any) => {
       const myVote = votes?.find((v: any) => v.poll_id === poll.id);
       return {
         ...poll,
-        my_vote: myVote ? myVote.option_index : null
+        my_vote: myVote ? myVote.option_id : null
       };
     });
 
-    res.json({ success: true, polls: pollsWithVotes });
+    res.json({ success: true, polls: pollsWithVotes || [] });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// [RESIDENT] Vote on a poll
-router.post('/:id/vote', requireRole(['resident']), async (req: Request, res: Response): Promise<void> => {
+// [RESIDENT/ADMIN/GUARD] Vote on a poll
+router.post('/:id/vote', requireRole(['resident', 'admin', 'guard']), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { option_index } = req.body;
-    const residentId = req.user?.id;
+    const { option_index, option_id } = req.body;
+    const userId = req.user?.id;
+    const selectedOption = option_id !== undefined ? option_id : (option_index !== undefined ? option_index + 1 : 1);
 
     // Check if already voted
     const { data: existingVote } = await supabaseAdmin
-      .from('votes')
+      .from('poll_votes')
       .select('id')
       .eq('poll_id', id)
-      .eq('user_id', residentId)
+      .eq('user_id', userId)
       .single();
 
     if (existingVote) {
@@ -65,15 +67,16 @@ router.post('/:id/vote', requireRole(['resident']), async (req: Request, res: Re
 
     // Insert vote
     const { error: voteError } = await supabaseAdmin
-      .from('votes')
+      .from('poll_votes')
       .insert({
         poll_id: id,
-        user_id: residentId,
-        option_index
+        user_id: userId,
+        option_id: selectedOption
       });
 
     if (voteError) {
-      res.status(500).json({ error: 'Failed to submit vote' });
+      console.error('Vote Submit Error:', voteError);
+      res.status(500).json({ error: 'Failed to submit vote', details: voteError.message });
       return;
     }
 

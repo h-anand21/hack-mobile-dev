@@ -7,38 +7,33 @@ const router = Router();
 // [RESIDENT] Create a new complaint
 router.post('/', requireRole(['resident']), async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, category, priority } = req.body;
+    const { title, description, category } = req.body;
     const residentId = req.user?.id;
     const societyId = req.user?.society_id;
 
-    // Fetch resident's flat
+    // Fetch resident's flat (if exists)
     const { data: flatData } = await supabaseAdmin
       .from('flat_members')
       .select('flat_id')
       .eq('user_id', residentId)
       .single();
 
-    if (!flatData) {
-      res.status(400).json({ error: 'Resident flat not found' });
-      return;
-    }
-
     const { data: complaint, error } = await supabaseAdmin
       .from('complaints')
       .insert({
         society_id: societyId,
-        flat_id: flatData.flat_id,
-        created_by: residentId,
+        flat_id: flatData?.flat_id || null,
+        user_id: residentId,
         title,
         description,
-        category: category || 'general',
-        priority: priority || 'low',
+        category: category || 'General',
         status: 'open'
       })
       .select()
       .single();
 
     if (error || !complaint) {
+      console.error('Create Complaint Error:', error);
       res.status(500).json({ error: 'Failed to create complaint', details: error?.message });
       return;
     }
@@ -58,26 +53,24 @@ router.get('/', requireRole(['resident', 'admin']), async (req: Request, res: Re
 
     let query = supabaseAdmin
       .from('complaints')
-      .select(`
-        *,
-        flats ( number, block )
-      `)
+      .select('*')
       .eq('society_id', societyId)
       .order('created_at', { ascending: false });
 
     // If resident, only show their own complaints
     if (role === 'resident') {
-      query = query.eq('created_by', residentId);
+      query = query.eq('user_id', residentId);
     }
 
     const { data: complaints, error } = await query;
 
     if (error) {
-      res.status(500).json({ error: 'Failed to fetch complaints' });
+      console.error('Fetch Complaints Error:', error);
+      res.status(500).json({ error: 'Failed to fetch complaints', details: error.message });
       return;
     }
 
-    res.json({ success: true, complaints });
+    res.json({ success: true, complaints: complaints || [] });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -87,15 +80,12 @@ router.get('/', requireRole(['resident', 'admin']), async (req: Request, res: Re
 router.patch('/:id', requireRole(['admin']), async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { status, resolution_notes } = req.body;
+    const { status } = req.body;
 
     const { data: complaint, error } = await supabaseAdmin
       .from('complaints')
       .update({
-        status,
-        resolution_notes,
-        updated_at: new Date().toISOString(),
-        resolved_at: status === 'resolved' ? new Date().toISOString() : null
+        status
       })
       .eq('id', id)
       .select()

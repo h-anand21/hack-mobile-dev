@@ -167,8 +167,8 @@ router.post('/:id/reject', requireRole(['resident']), async (req: Request, res: 
   }
 });
 
-// [GUARD/ADMIN] Get visitor history
-router.get('/history', requireRole(['guard', 'admin']), async (req: Request, res: Response): Promise<void> => {
+// [GUARD/ADMIN/RESIDENT] Get visitor history
+router.get('/history', requireRole(['guard', 'admin', 'resident']), async (req: Request, res: Response): Promise<void> => {
   try {
     const societyId = req.user?.society_id;
     

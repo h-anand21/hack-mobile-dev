@@ -12,8 +12,7 @@ router.get('/', requireRole(['resident', 'admin']), async (req: Request, res: Re
     const { data: amenities, error } = await supabaseAdmin
       .from('amenities')
       .select('*')
-      .eq('society_id', societyId)
-      .eq('is_active', true);
+      .eq('society_id', societyId);
 
     if (error) {
       res.status(500).json({ error: 'Failed to fetch amenities' });
