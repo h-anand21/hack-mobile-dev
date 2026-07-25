@@ -104,7 +104,8 @@ export default function ResidentDashboard() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FB]">
       <ScrollView 
-        className="flex-1 px-5"
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#A3E635" />}
       >
@@ -185,7 +186,7 @@ export default function ResidentDashboard() {
               className="flex-1 bg-gray-100 py-3.5 rounded-2xl items-center flex-row justify-center"
             >
               <X size={18} color="#EF4444" />
-              <Text className="text-gray-900 font-bold text-sm ml-1.5">Reject</Text>
+              <Text className="text-gray-900 font-bold text-sm" style={{ marginLeft: 6 }}>Reject</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -193,7 +194,7 @@ export default function ResidentDashboard() {
               className="flex-1 bg-[#D2FC52] py-3.5 rounded-2xl items-center flex-row justify-center shadow-sm"
             >
               <Check size={18} color="#1E293B" />
-              <Text className="text-gray-900 font-extrabold text-sm ml-1.5">Approve</Text>
+              <Text className="text-gray-900 font-extrabold text-sm" style={{ marginLeft: 6 }}>Approve</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -206,7 +207,7 @@ export default function ResidentDashboard() {
               onPress={() => router.push('/(resident)/(tabs)/visitors')} 
               className="flex-row items-center"
             >
-              <Text className="text-gray-400 font-semibold text-xs mr-1">View All</Text>
+              <Text className="text-gray-400 font-semibold text-xs">View All</Text>
               <ChevronRight size={14} color="#94A3B8" />
             </TouchableOpacity>
           </View>
@@ -245,15 +246,15 @@ export default function ResidentDashboard() {
               <Text className="text-gray-800 font-bold text-xs">Helpdesk</Text>
             </TouchableOpacity>
 
-            {/* Maintenance */}
+            {/* Pay Dues */}
             <TouchableOpacity 
-              onPress={() => Alert.alert('Maintenance Dues', 'Total Due: ₹2,500')}
+              onPress={() => Alert.alert('Maintenance Dues', 'Total Due: ₹2,500\nDue on: 15 Aug 2025\n\nPay securely via Razorpay.')}
               className="flex-1 bg-white p-3.5 rounded-2xl items-center border border-gray-100 shadow-sm"
             >
               <View className="w-12 h-12 bg-[#D2F6EA] rounded-2xl items-center justify-center mb-2">
                 <CreditCard size={22} color="#0D9488" />
               </View>
-              <Text className="text-gray-800 font-bold text-xs">Maintenance</Text>
+              <Text className="text-gray-800 font-bold text-xs">Pay Dues</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -316,7 +317,7 @@ export default function ResidentDashboard() {
         <Animated.View entering={FadeInUp.delay(400)} className="flex-row gap-3 mb-6">
           {/* Card 3: Upcoming Booking */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/community')}
+            onPress={() => router.push('/(resident)/(tabs)/services')}
             className="flex-1 bg-[#FFF9EE] p-4 rounded-3xl justify-between border border-amber-100"
           >
             <View>
@@ -341,17 +342,17 @@ export default function ResidentDashboard() {
             </View>
 
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/(tabs)/services')}
               className="flex-row items-center mt-2"
             >
-              <Text className="text-amber-700 font-bold text-xs mr-1">View Booking</Text>
+              <Text className="text-amber-700 font-bold text-xs">View Booking</Text>
               <ChevronRight size={14} color="#B45309" />
             </TouchableOpacity>
           </TouchableOpacity>
 
           {/* Card 4: Helpdesk */}
           <TouchableOpacity 
-            onPress={() => router.push('/(resident)/(tabs)/community')}
+            onPress={() => router.push('/(resident)/(tabs)/complaints')}
             className="flex-1 bg-[#F2FBF7] p-4 rounded-3xl justify-between border border-emerald-100"
           >
             <View>
@@ -369,10 +370,10 @@ export default function ResidentDashboard() {
             </View>
 
             <TouchableOpacity 
-              onPress={() => router.push('/(resident)/(tabs)/community')}
+              onPress={() => router.push('/(resident)/(tabs)/complaints')}
               className="flex-row items-center mt-3"
             >
-              <Text className="text-emerald-700 font-bold text-xs mr-1">View Details</Text>
+              <Text className="text-emerald-700 font-bold text-xs">View Details</Text>
               <ChevronRight size={14} color="#047857" />
             </TouchableOpacity>
           </TouchableOpacity>
@@ -400,7 +401,7 @@ export default function ResidentDashboard() {
           </TouchableOpacity>
         </Animated.View>
 
-        <View className="h-10" />
+        <View style={{ height: 20 }} />
       </ScrollView>
     </SafeAreaView>
   );

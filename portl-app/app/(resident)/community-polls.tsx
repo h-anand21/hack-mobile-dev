@@ -15,7 +15,7 @@ export default function CommunityPollsScreen() {
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'upcoming' | 'closed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [votedOption, setVotedOption] = useState<number>(0); // 0 = Yes I'm in!
+  const [votedOption, setVotedOption] = useState<number | null>(null);
 
   const defaultPolls = [
     {
@@ -87,7 +87,7 @@ export default function CommunityPollsScreen() {
           id: p.id || String(Math.random()),
           title: p.title || p.question || 'Community Poll',
           subtitle: p.description || p.subtitle || '',
-          status: p.status || p.is_active ? 'active' : 'closed',
+          status: p.status || (p.is_active ? 'active' : 'closed'),
           timeLeft: p.ends_at ? 'Ends soon' : (p.timeLeft || ''),
           votedCount: p.vote_count || p.votedCount || 0,
           bgColor: '#D1FAE5',
@@ -128,6 +128,9 @@ export default function CommunityPollsScreen() {
     return true;
   });
 
+  const heroPoll = defaultPolls[0];
+  const heroOptions = Array.isArray(heroPoll?.options) ? heroPoll.options : [];
+
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FB]">
       {/* HEADER BAR */}
@@ -157,7 +160,7 @@ export default function CommunityPollsScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#D2FC52" />}
       >
-        {/* TAB FILTER PILLS CONTROL */}
+        {/* TAB FILTER PILLS */}
         <View className="bg-white p-1.5 rounded-2xl flex-row justify-between mb-4 shadow-sm border border-gray-100">
           {/* All Polls */}
           <TouchableOpacity
@@ -219,7 +222,9 @@ export default function CommunityPollsScreen() {
         {/* SEARCH & FILTER ROW */}
         <View className="flex-row gap-2.5 mb-5">
           <View className="flex-1 bg-white px-3.5 py-3 rounded-2xl border border-gray-100 flex-row items-center shadow-xs">
-            <Search size={16} color="#94A3B8" className="mr-2" />
+            <View style={{ marginRight: 8 }}>
+              <Search size={16} color="#94A3B8" />
+            </View>
             <TextInput
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -233,7 +238,9 @@ export default function CommunityPollsScreen() {
             onPress={() => Alert.alert('Filter', 'Filter polls')}
             className="bg-white px-4 py-3 rounded-2xl border border-gray-100 flex-row items-center shadow-xs"
           >
-            <Filter size={15} color="#475569" className="mr-1.5" />
+            <View style={{ marginRight: 6 }}>
+              <Filter size={15} color="#475569" />
+            </View>
             <Text className="text-gray-800 font-bold text-xs">Filter</Text>
           </TouchableOpacity>
         </View>
@@ -243,7 +250,7 @@ export default function CommunityPollsScreen() {
           <Animated.View entering={FadeInDown.duration(400)} className="bg-[#F4FBE4] p-5 rounded-3xl mb-5 border border-lime-100 shadow-sm">
             <View className="flex-row justify-between items-start mb-3">
               <View className="w-14 h-14 bg-white/80 rounded-2xl items-center justify-center mr-3 border border-lime-200">
-                <Trees size={26} color="#163316" />
+                <BarChart3 size={26} color="#163316" />
               </View>
 
               <View className="flex-1">
@@ -252,8 +259,8 @@ export default function CommunityPollsScreen() {
                     <Text className="text-emerald-700 font-extrabold text-[10px]">Active •</Text>
                   </View>
                   <View className="flex-row items-center">
-                    <Clock size={12} color="#64748B" className="mr-1" />
-                    <Text className="text-gray-500 text-[11px] font-semibold">2 days left</Text>
+                    <Clock size={12} color="#64748B" />
+                    <Text className="text-gray-500 text-[11px] font-semibold ml-1">2 days left</Text>
                   </View>
                 </View>
 
@@ -265,43 +272,67 @@ export default function CommunityPollsScreen() {
                 </Text>
 
                 <View className="flex-row items-center mt-2">
-                  <Users size={13} color="#475569" className="mr-1.5" />
-                  <Text className="text-gray-700 text-xs font-bold">128 residents voted</Text>
+                  <Users size={13} color="#475569" />
+                  <Text className="text-gray-700 text-xs font-bold ml-1.5">128 residents voted</Text>
                 </View>
               </View>
             </View>
 
             {/* VOTING OPTIONS LIST */}
-            <View className="space-y-2.5 my-3">
-              {defaultPolls[0].options?.map((opt) => {
+            <View style={{ gap: 10, marginVertical: 12 }}>
+              {heroOptions.map((opt: any) => {
                 const isSelected = votedOption === opt.id;
-
                 return (
                   <TouchableOpacity
                     key={opt.id}
                     onPress={() => handleVote(opt.id)}
-                    className={`p-3.5 rounded-2xl border flex-row items-center justify-between relative overflow-hidden ${
-                      isSelected ? 'bg-white border-[#163316] shadow-xs' : 'bg-white/90 border-gray-200'
-                    }`}
+                    style={{
+                      padding: 14,
+                      borderRadius: 16,
+                      borderWidth: 1,
+                      borderColor: isSelected ? '#163316' : '#E2E8F0',
+                      backgroundColor: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.9)',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      overflow: 'hidden',
+                      position: 'relative'
+                    }}
                   >
                     {/* Background Progress Fill */}
                     <View 
-                      style={{ width: `${opt.percent}%` }} 
-                      className={`absolute top-0 bottom-0 left-0 ${isSelected ? 'bg-[#E2F8EE]' : 'bg-gray-100'}`} 
+                      style={{ 
+                        position: 'absolute', 
+                        top: 0, bottom: 0, left: 0, 
+                        width: `${opt.percent}%`,
+                        backgroundColor: isSelected ? '#E2F8EE' : '#F1F5F9'
+                      }} 
                     />
 
-                    <View className="flex-row items-center z-10 flex-1 pr-2">
-                      {isSelected ? (
-                        <CheckCircle2 size={18} color="#163316" className="mr-2.5" />
-                      ) : (
-                        <Circle size={18} color="#94A3B8" className="mr-2.5" />
-                      )}
-                      <Text className={`font-extrabold text-xs flex-1 ${isSelected ? 'text-[#163316]' : 'text-gray-800'}`}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', zIndex: 10, flex: 1, paddingRight: 8 }}>
+                      <View style={{ marginRight: 10 }}>
+                        {isSelected ? (
+                          <CheckCircle2 size={18} color="#163316" />
+                        ) : (
+                          <Circle size={18} color="#94A3B8" />
+                        )}
+                      </View>
+                      <Text style={{ 
+                        fontWeight: '800', 
+                        fontSize: 12, 
+                        flex: 1,
+                        color: isSelected ? '#163316' : '#1E293B'
+                      }}>
                         {opt.text}
                       </Text>
                     </View>
 
-                    <Text className={`font-black text-xs z-10 ${isSelected ? 'text-[#163316]' : 'text-gray-600'}`}>
+                    <Text style={{ 
+                      fontWeight: '900', 
+                      fontSize: 12, 
+                      zIndex: 10,
+                      color: isSelected ? '#163316' : '#64748B'
+                    }}>
                       {opt.percent}%
                     </Text>
                   </TouchableOpacity>
@@ -311,7 +342,7 @@ export default function CommunityPollsScreen() {
 
             <TouchableOpacity 
               onPress={() => Alert.alert('Poll Details', 'Voting recorded! View breakdown of 128 resident responses.')}
-              className="bg-[#163316] py-3.5 rounded-2xl items-center shadow-xs mt-2"
+              className="bg-[#163316] py-3.5 rounded-2xl items-center mt-2"
             >
               <Text className="text-white font-extrabold text-xs">View Details & Vote</Text>
             </TouchableOpacity>
@@ -337,7 +368,7 @@ export default function CommunityPollsScreen() {
                   </View>
 
                   <View className="flex-1">
-                    <View className="flex-row items-center gap-2 mb-1">
+                    <View className="flex-row items-center mb-1">
                       <View className={`px-2 py-0.5 rounded-full ${
                         item.status === 'active' 
                           ? 'bg-blue-50' 
@@ -391,10 +422,12 @@ export default function CommunityPollsScreen() {
           );
         })}
 
-        {/* HAVE A SUGGESTION BANNER CARD */}
+        {/* HAVE A SUGGESTION BANNER */}
         <Animated.View entering={FadeInUp.delay(600)} className="bg-[#F4FBE4] p-4 rounded-2xl mt-2 mb-8 border border-lime-100 flex-row items-center justify-between">
           <View className="flex-row items-center flex-1 mr-2">
-            <Megaphone size={16} color="#475569" className="mr-2" />
+            <View style={{ marginRight: 8 }}>
+              <Megaphone size={16} color="#475569" />
+            </View>
             <Text className="text-gray-700 text-xs font-semibold flex-1">
               <Text className="font-extrabold">Have a suggestion for a poll?</Text> Let the management know what you'd like us to ask.
             </Text>
@@ -402,9 +435,11 @@ export default function CommunityPollsScreen() {
 
           <TouchableOpacity 
             onPress={() => Alert.alert('Submit Suggestion', 'Type your poll idea for management review')}
-            className="bg-white px-3 py-1.5 rounded-full flex-row items-center border border-lime-200 shadow-xs"
+            className="bg-white px-3 py-1.5 rounded-full flex-row items-center border border-lime-200"
           >
-            <Send size={12} color="#1E293B" className="mr-1" />
+            <View style={{ marginRight: 4 }}>
+              <Send size={12} color="#1E293B" />
+            </View>
             <Text className="text-gray-900 font-extrabold text-xs">Submit Suggestion</Text>
           </TouchableOpacity>
         </Animated.View>
