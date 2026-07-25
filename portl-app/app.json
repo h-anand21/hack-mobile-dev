@@ -1,23 +1,26 @@
 {
   "expo": {
-    "name": "portl-app",
-    "slug": "portl-app",
-    "scheme": "portl",
+    "name": "Gately",
+    "slug": "gately",
+    "scheme": "gately",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hak.portl"
+      "bundleIdentifier": "com.hak.gately"
     },
     "android": {
-      "package": "com.hak.portl",
+      "package": "com.hak.gately",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },

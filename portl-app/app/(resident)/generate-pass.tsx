@@ -25,7 +25,7 @@ export default function GeneratePassScreen() {
   
   // QR & UI State
   const [loading, setLoading] = useState(false);
-  const [qrToken, setQrToken] = useState<string>('PORTL-PASS-AMIT-VERMA-B302-2025');
+  const [qrToken, setQrToken] = useState<string>('GATELY-PASS-AMIT-VERMA-B302-2025');
   const qrRef = useRef<any>(null);
 
   const handleGenerate = async () => {
@@ -47,11 +47,11 @@ export default function GeneratePassScreen() {
       if (response.data?.success && response.data?.token) {
         setQrToken(response.data.token);
       } else {
-        setQrToken(`PORTL-PASS-${guestName.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`);
+        setQrToken(`GATELY-PASS-${guestName.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`);
       }
       Alert.alert('QR Pass Active 🎉', 'New Guest Pre-Approval QR Pass created successfully!');
     } catch (error) {
-      setQrToken(`PORTL-PASS-${guestName.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`);
+      setQrToken(`GATELY-PASS-${guestName.toUpperCase().replace(/\s+/g, '-')}-${Date.now()}`);
       Alert.alert('QR Pass Active 🎉', 'Guest Pre-Approval QR Pass ready for sharing!');
     } finally {
       setLoading(false);

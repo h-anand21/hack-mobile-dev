@@ -47,13 +47,13 @@ export default function HelpSupportScreen() {
         </View>
 
         <View className="bg-white rounded-3xl p-5 mb-6 shadow-sm border border-gray-100">
-          <Text className="text-gray-900 font-extrabold text-base mb-3">Portl App Technical Support</Text>
+          <Text className="text-gray-900 font-extrabold text-base mb-3">Gately App Technical Support</Text>
           <TouchableOpacity onPress={() => Alert.alert('Support Email', 'Opening support email...')} className="p-3.5 bg-gray-50 rounded-2xl mb-2.5 flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Mail size={18} color="#7C3AED" className="mr-3" />
               <View>
                 <Text className="text-gray-900 font-bold text-xs">Email Support</Text>
-                <Text className="text-gray-400 text-[10px]">support@portl.com</Text>
+                <Text className="text-gray-400 text-[10px]">support@gately.com</Text>
               </View>
             </View>
             <ExternalLink size={16} color="#94A3B8" />
