@@ -1,9 +1,11 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { Home, Users, Wrench, User, Bell } from 'lucide-react-native';
-import { View, Text } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 export default function ResidentTabsLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -59,15 +61,14 @@ export default function ResidentTabsLayout() {
         }}
       />
 
-      {/* 4. NOTIFICATIONS */}
+      {/* 4. ALERTS — Uses tabBarButton to push without changing tab state (avoids redirect loop) */}
       <Tabs.Screen
         name="notifications"
         options={{
           title: 'Alerts',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: () => (
             <View style={{ position: 'relative' }}>
-              <Bell color={color} size={22} />
-              {/* Notification badge dot */}
+              <Bell color="#94A3B8" size={22} />
               <View style={{
                 position: 'absolute',
                 top: -2,
@@ -80,6 +81,17 @@ export default function ResidentTabsLayout() {
                 borderColor: '#1E293B',
               }} />
             </View>
+          ),
+          // Custom button → push to /(resident)/notifications instead of switching tab
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              style={props.style}
+              onPress={() => router.push('/(resident)/notifications')}
+              accessibilityLabel="Alerts"
+              activeOpacity={0.7}
+            >
+              {props.children}
+            </TouchableOpacity>
           ),
         }}
       />
@@ -94,18 +106,9 @@ export default function ResidentTabsLayout() {
       />
 
       {/* HIDE OTHER PAGES FROM BOTTOM BAR */}
-      <Tabs.Screen
-        name="community"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="services"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="payments"
-        options={{ href: null }}
-      />
+      <Tabs.Screen name="community" options={{ href: null }} />
+      <Tabs.Screen name="services" options={{ href: null }} />
+      <Tabs.Screen name="payments" options={{ href: null }} />
     </Tabs>
   );
 }
