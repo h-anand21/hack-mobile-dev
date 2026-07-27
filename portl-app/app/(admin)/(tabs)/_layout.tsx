@@ -107,6 +107,14 @@ export default function AdminTabsLayout() {
           tabBarIcon: ({ color }) => <Settings color={color} size={22} />,
         }}
       />
+
+      {/* HIDDEN TAB (ANNOUNCEMENTS) */}
+      <Tabs.Screen
+        name="announcements"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
