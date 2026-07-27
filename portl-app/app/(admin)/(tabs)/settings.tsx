@@ -38,7 +38,7 @@ export default function AdminSettingsScreen() {
       <ScrollView style={{ flex: 1, paddingHorizontal: 20, paddingTop: 16 }} showsVerticalScrollIndicator={false}>
         <View style={{ backgroundColor: '#FFFFFF', borderRadius: 24, padding: 8, borderWidth: 1, borderColor: '#F1F5F9', marginBottom: 20 }}>
           <TouchableOpacity 
-            onPress={() => Alert.alert('Society Config', 'Gately Grand Residency Config')}
+            onPress={() => router.push('/(admin)/towers-flats')}
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14 }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
