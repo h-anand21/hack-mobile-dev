@@ -12,6 +12,7 @@ import maintenanceRoutes from './routes/maintenance';
 import pollRoutes from './routes/polls';
 import noticeRoutes from './routes/notices';
 import adminRoutes from './routes/admin';
+import guardRoutes from './routes/guard';
 import { supabaseAdmin } from './services/supabase';
 import { initAutoRejectJob } from './jobs/autoReject';
 import { initRemindersJob } from './jobs/reminders';
@@ -79,6 +80,7 @@ app.use('/api/maintenance', verifyJWT, maintenanceRoutes);
 app.use('/api/polls', verifyJWT, pollRoutes);
 app.use('/api/notices', verifyJWT, noticeRoutes);
 app.use('/api/admin', verifyJWT, adminRoutes);
+app.use('/api/guard', verifyJWT, guardRoutes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
