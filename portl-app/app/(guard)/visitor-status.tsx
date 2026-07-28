@@ -3,100 +3,142 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../services/supabase/client';
-import { CheckCircle, XCircle, Clock, ArrowLeft } from 'lucide-react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { CheckCircle2, XCircle, Clock, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 
 export default function VisitorStatusScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
-  const [visitorName, setVisitorName] = useState('');
+  const [visitorName, setVisitorName] = useState('Visitor');
 
   useEffect(() => {
     // Initial fetch
     const fetchVisitor = async () => {
-      const { data } = await supabase.from('visitors').select('status, name').eq('id', id).single();
-      if (data) {
-        setStatus(data.status);
-        setVisitorName(data.name);
+      if (!id) return;
+      try {
+        const { data } = await supabase.from('visitors').select('status, name').eq('id', id).single();
+        if (data) {
+          setStatus(data.status);
+          if (data.name) setVisitorName(data.name);
+        }
+      } catch (e) {
+        console.log('Visitor fetch error:', e);
       }
     };
     fetchVisitor();
 
     // Subscribe to realtime updates
-    const subscription = supabase
-      .channel(`visitor_status_${id}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'visitors', filter: `id=eq.${id}` },
-        (payload) => {
-          setStatus(payload.new.status);
-        }
-      )
-      .subscribe();
+    if (id) {
+      const subscription = supabase
+        .channel(`visitor_status_${id}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'visitors', filter: `id=eq.${id}` },
+          (payload) => {
+            if (payload?.new?.status) setStatus(payload.new.status);
+          }
+        )
+        .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-    };
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, [id]);
 
-  const getStatusContent = () => {
-    switch (status) {
-      case 'approved':
-        return (
-          <Animated.View entering={FadeInDown} className="items-center">
-            <View className="w-32 h-32 bg-green-500/20 rounded-full justify-center items-center mb-6">
-              <CheckCircle size={64} color="#22c55e" />
-            </View>
-            <Text className="text-3xl text-white font-bold mb-2">Approved!</Text>
-            <Text className="text-textSecondary text-center">Resident has approved entry for {visitorName}.</Text>
-          </Animated.View>
-        );
-      case 'rejected':
-        return (
-          <Animated.View entering={FadeInDown} className="items-center">
-            <View className="w-32 h-32 bg-red-500/20 rounded-full justify-center items-center mb-6">
-              <XCircle size={64} color="#ef4444" />
-            </View>
-            <Text className="text-3xl text-white font-bold mb-2">Entry Denied</Text>
-            <Text className="text-textSecondary text-center">Resident has rejected entry for {visitorName}.</Text>
-          </Animated.View>
-        );
-      case 'pending':
-      default:
-        return (
-          <Animated.View entering={FadeIn} className="items-center">
-            <View className="w-32 h-32 bg-accent/20 rounded-full justify-center items-center mb-6 relative">
-              <ActivityIndicator size="large" color="#E7FF45" className="absolute" />
-              <Clock size={40} color="#E7FF45" />
-            </View>
-            <Text className="text-3xl text-white font-bold mb-2">Waiting...</Text>
-            <Text className="text-textSecondary text-center">Notifying resident. Please wait for approval.</Text>
-          </Animated.View>
-        );
-    }
-  };
-
   return (
-    <SafeAreaView className="flex-1 bg-dark">
-      <View className="p-4">
-        <TouchableOpacity onPress={() => router.replace('/(guard)/(tabs)')} className="p-2 bg-white/10 self-start rounded-full">
-          <ArrowLeft color="#fff" size={24} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F8F9FB' }}>
+      {/* TOP HEADER */}
+      <View style={{
+        paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, backgroundColor: '#FFFFFF',
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        borderBottomWidth: 1, borderBottomColor: '#F1F5F9'
+      }}>
+        <TouchableOpacity
+          onPress={() => router.replace('/(guard)/(tabs)')}
+          style={{
+            width: 40, height: 40, borderRadius: 20, backgroundColor: '#F8FAFC',
+            alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#F1F5F9'
+          }}
+        >
+          <ArrowLeft size={20} color="#1E293B" />
+        </TouchableOpacity>
+
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ color: '#0F172A', fontWeight: '900', fontSize: 18 }}>Visitor Approval Status</Text>
+          <Text style={{ color: '#94A3B8', fontSize: 12, fontWeight: '600', marginTop: 2 }}>Gate Approval Tracker</Text>
+        </View>
+
+        <View style={{ width: 40 }} />
+      </View>
+
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
+        {status === 'approved' ? (
+          <View style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{
+              width: 96, height: 96, borderRadius: 48, backgroundColor: '#ECFCCB',
+              alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+              borderWidth: 3, borderColor: '#163316'
+            }}>
+              <CheckCircle2 size={54} color="#163316" />
+            </View>
+            <Text style={{ color: '#0F172A', fontWeight: '900', fontSize: 26, textAlign: 'center' }}>
+              Entry Approved! 🎉
+            </Text>
+            <Text style={{ color: '#64748B', fontSize: 14, fontWeight: '600', textAlign: 'center', marginTop: 8, lineHeight: 22 }}>
+              Resident has approved gate entry for <Text style={{ color: '#163316', fontWeight: '800' }}>{visitorName}</Text>.
+            </Text>
+          </View>
+        ) : status === 'rejected' ? (
+          <View style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{
+              width: 96, height: 96, borderRadius: 48, backgroundColor: '#FFE4E6',
+              alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+              borderWidth: 3, borderColor: '#E11D48'
+            }}>
+              <XCircle size={54} color="#E11D48" />
+            </View>
+            <Text style={{ color: '#0F172A', fontWeight: '900', fontSize: 26, textAlign: 'center' }}>
+              Entry Denied ❌
+            </Text>
+            <Text style={{ color: '#64748B', fontSize: 14, fontWeight: '600', textAlign: 'center', marginTop: 8, lineHeight: 22 }}>
+              Resident has rejected gate entry for <Text style={{ color: '#E11D48', fontWeight: '800' }}>{visitorName}</Text>.
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{
+              width: 96, height: 96, borderRadius: 48, backgroundColor: '#F4FBE4',
+              alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+              borderWidth: 3, borderColor: '#D2FC52', position: 'relative'
+            }}>
+              <ActivityIndicator size="large" color="#163316" style={{ position: 'absolute' }} />
+              <Clock size={36} color="#163316" />
+            </View>
+            <Text style={{ color: '#0F172A', fontWeight: '900', fontSize: 26, textAlign: 'center' }}>
+              Waiting for Resident... ⏳
+            </Text>
+            <Text style={{ color: '#64748B', fontSize: 14, fontWeight: '600', textAlign: 'center', marginTop: 8, lineHeight: 22 }}>
+              Notification sent to flat resident. Real-time gate status will update automatically.
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* FOOTER BUTTON */}
+      <View style={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+        <TouchableOpacity 
+          onPress={() => router.replace('/(guard)/(tabs)')}
+          style={{
+            backgroundColor: '#163316', paddingVertical: 16, borderRadius: 20,
+            alignItems: 'center', justifyContent: 'center',
+            shadowColor: '#163316', shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2, shadowRadius: 8, elevation: 4
+          }}
+        >
+          <Text style={{ color: '#D2FC52', fontWeight: '900', fontSize: 16 }}>Back to Guard Dashboard</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-1 justify-center items-center px-6">
-        {getStatusContent()}
-      </View>
-      {status !== 'pending' && (
-        <View className="px-6 pb-10">
-          <TouchableOpacity 
-            onPress={() => router.replace('/(guard)/(tabs)')}
-            className="bg-accent py-4 rounded-full items-center shadow-card"
-          >
-            <Text className="text-dark font-bold text-lg">Back to Dashboard</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </SafeAreaView>
   );
 }
