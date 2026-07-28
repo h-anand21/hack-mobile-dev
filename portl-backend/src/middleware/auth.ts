@@ -9,6 +9,7 @@ declare global {
         role: string;
         society_id?: string;
         email?: string;
+        name?: string;
       };
     }
   }
