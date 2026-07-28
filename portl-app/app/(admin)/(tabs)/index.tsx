@@ -312,7 +312,7 @@ export default function AdminDashboard() {
               </TouchableOpacity>
 
               <TouchableOpacity 
-                onPress={() => Alert.alert('Manage Vehicles', 'Society parking & vehicle registry')}
+                onPress={() => router.push('/(resident)/registered-vehicles')}
                 style={{ flex: 1, backgroundColor: '#FFFFFF', padding: 14, borderRadius: 20, borderWidth: 1, borderColor: '#F1F5F9', alignItems: 'center' }}
               >
                 <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: '#ECFCCB', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
@@ -355,7 +355,7 @@ export default function AdminDashboard() {
               </TouchableOpacity>
 
               <TouchableOpacity 
-                onPress={() => Alert.alert('Announcement', 'Send broadcast notice to all society residents')}
+                onPress={() => router.push('/(admin)/notices')}
                 style={{ flex: 1, backgroundColor: '#FFFFFF', padding: 14, borderRadius: 20, borderWidth: 1, borderColor: '#F1F5F9', alignItems: 'center' }}
               >
                 <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: '#ECFCCB', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
